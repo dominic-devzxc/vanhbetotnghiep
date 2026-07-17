@@ -62,8 +62,7 @@ function InvitationMain() {
   // Preload hình ảnh hoa góc để tránh giật lag khi tải trang
   useEffect(() => {
     const imageUrls = [
-      '/images/flower-top-left.png',
-      '/images/flower-bottom-right.png'
+      '/images/flower-top-left.png'
     ];
 
     let loadedCount = 0;
@@ -201,9 +200,9 @@ function InvitationMain() {
         className="absolute left-0 bottom-0 pointer-events-none mix-blend-multiply select-none z-0 w-[24vw] max-w-[320px] min-w-[120px] origin-bottom-left scale-y-[-1] opacity-90"
       />
       <img
-        src="/images/flower-bottom-right.png"
+        src="/images/flower-top-left.png"
         alt=""
-        className="absolute right-0 bottom-0 pointer-events-none mix-blend-multiply select-none z-0 w-[28vw] max-w-[360px] min-w-[140px] origin-bottom-right opacity-90"
+        className="absolute right-0 bottom-0 pointer-events-none mix-blend-multiply select-none z-0 w-[24vw] max-w-[320px] min-w-[120px] origin-bottom-right scale-x-[-1] scale-y-[-1] opacity-90"
       />
 
       <AnimatePresence>
