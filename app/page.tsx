@@ -154,6 +154,28 @@ function InvitationMain() {
       {/* Hiệu ứng cánh hoa rơi lung linh ở nền */}
       <RosePetals />
 
+      {/* Hoa trang trí 4 góc */}
+      <img
+        src="/images/flower-top-left.png"
+        alt=""
+        className="absolute left-0 top-0 pointer-events-none mix-blend-multiply select-none z-0 w-[24vw] max-w-[320px] min-w-[120px] origin-top-left opacity-90"
+      />
+      <img
+        src="/images/flower-top-left.png"
+        alt=""
+        className="absolute right-0 top-0 pointer-events-none mix-blend-multiply select-none z-0 w-[24vw] max-w-[320px] min-w-[120px] origin-top-right scale-x-[-1] opacity-90"
+      />
+      <img
+        src="/images/flower-top-left.png"
+        alt=""
+        className="absolute left-0 bottom-0 pointer-events-none mix-blend-multiply select-none z-0 w-[24vw] max-w-[320px] min-w-[120px] origin-bottom-left scale-y-[-1] opacity-90"
+      />
+      <img
+        src="/images/flower-bottom-right.png"
+        alt=""
+        className="absolute right-0 bottom-0 pointer-events-none mix-blend-multiply select-none z-0 w-[28vw] max-w-[360px] min-w-[140px] origin-bottom-right opacity-90"
+      />
+
       <AnimatePresence>
         {clickRipples.map((ripple) => (
           <motion.span
