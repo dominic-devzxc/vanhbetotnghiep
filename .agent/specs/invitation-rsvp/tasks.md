@@ -75,3 +75,8 @@ created: 2026-07-17
 ## Phase 13: Input responsive fix
 
 - [X] T029 [US1] Đặt ô nhập tên rộng 100% trong pill container tại `components/InvitationCover.tsx`; xác nhận bằng Docker build.
+
+## Phase 14: Personalized artwork
+
+- [X] T030 [US2] Hiển thị tên khách trên dòng trống trong ảnh thiệp và bỏ lớp chữ “Trân trọng kính mời” trùng lặp tại `components/InvitationCard.tsx`.
+- [X] T031 [US3] Tái hiện local RSVP 502 và bổ sung bằng chứng Apps Script yêu cầu đăng nhập tại `.agent/debug/rsvp-502-apps-script-auth.md`.

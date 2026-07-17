@@ -64,8 +64,9 @@ export default function InvitationCard({ name, onResponseSubmit }: InvitationCar
       <motion.article animate={{ opacity: 1, y: 0 }} className="overflow-hidden rounded-[2rem] border border-white/80 bg-pastel-pink shadow-pastel" initial={{ opacity: 0, y: reduceMotion ? 0 : 18 }} transition={{ duration: reduceMotion ? 0.01 : 0.45 }}>
         <div className="relative aspect-[4/5] overflow-hidden bg-pastel-peach">
           <Image alt="Thiệp mời tham dự lễ tốt nghiệp của Đào Vân Anh" className="object-cover object-top" fill priority sizes="(max-width: 480px) calc(100vw - 24px), 448px" src={invitationArtwork} />
-          <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-pastel-text/55 to-transparent" />
-          <p className="absolute bottom-5 left-5 right-5 text-center font-handwriting text-4xl text-white drop-shadow-sm">Trân trọng kính mời</p>
+          <p aria-hidden="true" className="absolute inset-x-[17%] bottom-[5.5%] truncate text-center font-handwriting text-2xl font-semibold leading-none text-pastel-accent drop-shadow-sm sm:text-3xl">
+            {name}
+          </p>
         </div>
 
         <div className="px-6 pb-7 pt-6 sm:px-8">

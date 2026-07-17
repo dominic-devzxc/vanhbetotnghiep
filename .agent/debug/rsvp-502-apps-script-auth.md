@@ -19,6 +19,7 @@
   - GET Apps Script `/exec` sau khi theo redirect kết thúc tại `accounts.google.com/v3/signin/identifier`, Content-Type `text/html`.
   - Vì chưa vào được `doGet()`/`doPost()`, không có bản ghi test nào được ghi vào Sheet.
   - Đọc trực tiếp sheet `Trang tính1` qua Google Visualization CSV trả HTTP `200` nhưng nội dung rỗng, khớp với việc Apps Script chưa nhận được request.
+  - Xác minh lại local ngày 2026-07-17: `POST http://localhost:8900/api/rsvp` với payload hợp lệ trả HTTP `502`; URL Apps Script tiếp tục redirect tới `accounts.google.com/ServiceLogin`. ENV local có đủ hai key cấu hình, nên lỗi không phải do thiếu biến môi trường.
 
 ## Nguyên nhân gốc
 
