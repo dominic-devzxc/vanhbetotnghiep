@@ -25,3 +25,6 @@
 - [X] T009 [P] [US1] Sửa paper texture, color-space và palette mở thư trong `components/EnvelopeScene.tsx`.
 - [X] T010 [P] [US2] Giữ thiệp sau lớp bao thư và chạy Docker gate trong `components/EnvelopeScene.tsx`.
 - [X] T011 [P] [US1] Redesign dấu sáp 3D nhiều lớp với vòng, hạt, nguyệt quế và mũ tốt nghiệp dập nổi trong `components/EnvelopeScene.tsx`.
+- [X] T012 [P] [US1] Chuyển phong bì và dấu sáp sang palette pastel sáng, cân lại ánh sáng trong `components/EnvelopeScene.tsx`.
+- [X] T013 [P] [US2] Xóa thiệp mini và timeline trượt khỏi `components/EnvelopeScene.tsx`, đồng bộ props tại `components/InvitationCover.tsx`.
+- [X] T014 [P] [US1] Áp dụng palette theo ảnh tham chiếu và vòng sáng tĩnh quanh dấu trong `components/EnvelopeScene.tsx`, `components/InvitationCover.tsx`.

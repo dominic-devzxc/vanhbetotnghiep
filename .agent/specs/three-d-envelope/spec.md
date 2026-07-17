@@ -18,14 +18,15 @@ Màn mở đầu phải thể hiện rõ một phong thư giấy cao cấp với
 ## 3. Functional Requirements
 
 - **FR01**: Phong thư phải có thân, hai nếp gấp bên, nếp gấp dưới và nắp trên phân biệt được bằng sắc độ giấy.
-- **FR02**: Con dấu phải là một khối sáp đơn màu berry, có mép hữu cơ, viền dập và biểu tượng mũ tốt nghiệp dập nổi; đường kính không quá 20% chiều cao phong thư.
+- **FR02**: Con dấu phải là một khối sáp rose-gold pastel, có mép hữu cơ, viền dập và biểu tượng mũ tốt nghiệp dập nổi; đường kính không quá 20% chiều cao phong thư.
 - **FR03**: Không có nhãn hoặc nút hiển thị đè lên bề mặt con dấu.
 - **FR04**: Chỉ thao tác trên con dấu mới mở thư; khi tên trống phải đưa focus về ô tên và thông báo lỗi.
-- **FR05**: Khi mở, dấu biến mất, nắp xoay gần 175 độ và thiệp trượt lên trước khi chuyển màn.
+- **FR05**: Khi mở, dấu biến mất và nắp xoay gần 175 độ trước khi chuyển thẳng sang thiệp thật; không hiển thị thiệp mini trong phong bì 3D.
 - **FR06**: Phiên bản reduced-motion phải giữ hình phong thư, con dấu và thao tác mở tương đương.
 - **FR07**: Nếu cảnh 3D chưa tải được, trạng thái chờ phải giữ đúng khung hình phong thư và không gây dịch chuyển bố cục.
-- **FR08**: Màu giấy phải giữ sắc hồng phấn nhất quán ở cả trạng thái đóng và mở, không chuyển nâu/xám khi nắp xoay.
-- **FR09**: Thiệp bên trong phải giữ sau mặt bao thư trong toàn bộ sequence; chỉ phần đã trượt vượt khỏi miệng thư được nhìn thấy.
+- **FR08**: Màu giấy phải giữ sắc lavender–mauve pastel nhất quán ở cả trạng thái đóng và mở, không chuyển nâu/xám khi nắp xoay.
+- **FR09**: Scene phong bì không được chứa mesh thiệp mini có thể lòi khỏi bao trong sequence mở.
+- **FR10**: Phong bì dùng lavender–mauve pastel sáng, dấu sáp dùng rose-gold pastel; khi kích hoạt phải có vòng sáng champagne tĩnh quanh dấu.
 
 ## 4. Non-Functional Requirements
 

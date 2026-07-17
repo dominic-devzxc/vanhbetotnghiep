@@ -24,13 +24,12 @@ InvitationCover
     └── EnvelopeModel
         ├── thân và các nếp gấp giấy
         ├── nắp mở theo flapPivot
-        ├── thiệp trượt lên
         └── waxSeal: đĩa sáp hữu cơ + vòng dập + mũ tốt nghiệp dập nổi
 ```
 
 - Sửa trực tiếp `components/EnvelopeScene.tsx` để thay geometry và palette.
 - Canvas texture dùng nền giấy trung tính và `SRGBColorSpace`; material là nguồn màu chính để tránh nhân màu hai lần.
-- Thiệp giữ nguyên trục Z phía sau thân thư; animation mở chỉ thay đổi trục Y để depth buffer che đúng phần còn nằm trong bao.
+- Loại bỏ thiệp mini khỏi scene; animation mở chỉ tách dấu và xoay nắp rồi báo hoàn tất.
 - Sửa `components/InvitationCover.tsx` để đồng bộ fallback tĩnh, skeleton và loại bỏ nhãn che con dấu.
 - Không thay đổi state management, callback hoặc `app/page.tsx`.
 - Docker topology giữ nguyên service `web`; mọi type-check/build chạy trong container.

@@ -14,21 +14,21 @@ interface InvitationCoverProps {
 }
 
 const EnvelopeScene = dynamic(() => import("@/components/EnvelopeScene"), {
-  loading: () => <div className="h-full animate-pulse rounded-[1.5rem] bg-[#E8CDCB]/70" />,
+  loading: () => <div className="h-full animate-pulse rounded-[1.5rem] bg-[#F8E8EC]/80" />,
   ssr: false,
 });
 
 function StaticEnvelope({ armed, onSealClick }: { armed: boolean; onSealClick: () => void }) {
   return (
     <div className="flex h-full items-center justify-center" aria-hidden="true">
-      <div className="relative aspect-[1.62] w-[92%] overflow-hidden rounded-xl border border-[#C89472]/55 bg-[#DAB9B7] shadow-pastel">
-        <div className="absolute inset-0 bg-[#C7A2A5] [clip-path:polygon(0_100%,0_0,52%_57%)]" />
-        <div className="absolute inset-0 bg-[#E0BEC0] [clip-path:polygon(100%_100%,100%_0,48%_57%)]" />
-        <div className="absolute inset-0 bg-[#D1AAAC] [clip-path:polygon(0_100%,100%_100%,50%_42%)]" />
-        <div className="absolute inset-0 bg-[#E5C5C3] [clip-path:polygon(0_0,100%_0,50%_61%)]" />
+      <div className="relative aspect-[1.62] w-[92%] overflow-hidden rounded-xl border border-[#DDBEA4]/55 bg-[#DFCFDF] shadow-pastel">
+        <div className="absolute inset-0 bg-[#CDB9D0] [clip-path:polygon(0_100%,0_0,52%_57%)]" />
+        <div className="absolute inset-0 bg-[#E7D9E8] [clip-path:polygon(100%_100%,100%_0,48%_57%)]" />
+        <div className="absolute inset-0 bg-[#D9C7DC] [clip-path:polygon(0_100%,100%_100%,50%_42%)]" />
+        <div className="absolute inset-0 bg-[#E9DDEA] [clip-path:polygon(0_0,100%_0,50%_61%)]" />
         <button
           aria-label={armed ? "Mở thư bằng con dấu sáp" : "Nhập tên trước để mở thư"}
-          className={`absolute left-1/2 top-[57%] grid h-14 w-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[48%_52%_45%_55%/52%_46%_54%_48%] border-2 border-[#D98A9C] bg-[#A64A62] text-[#E8A5B3] shadow-lg transition-transform active:scale-[0.98] ${armed ? "cursor-pointer" : "cursor-default opacity-60"}`}
+          className={`absolute left-1/2 top-[57%] grid h-14 w-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[48%_52%_45%_55%/52%_46%_54%_48%] border-2 border-[#F4BEC0] bg-[#E4A0A5] text-[#FFE3D2] shadow-lg transition-transform active:scale-[0.98] ${armed ? "cursor-pointer ring-8 ring-[#FFE2B8]/40" : "cursor-default opacity-60"}`}
           onClick={onSealClick}
           type="button"
         >
@@ -62,6 +62,13 @@ export default function InvitationCover({
   useEffect(() => {
     if (reduceMotion) onSceneReady?.();
   }, [onSceneReady, reduceMotion]);
+
+  useEffect(() => {
+    const guestName = initialName.trim().slice(0, 80);
+    if (!guestName) return;
+    setName(guestName);
+    setArmed(true);
+  }, [initialName]);
 
   function activateName(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -152,7 +159,6 @@ export default function InvitationCover({
         ) : (
           <EnvelopeScene
             armed={armed}
-            guestName={name.trim()}
             onInvalidSealClick={() => {
               setShakeInput((value) => value + 1);
               setNotice("Bạn hãy nhập tên trước nhé!");

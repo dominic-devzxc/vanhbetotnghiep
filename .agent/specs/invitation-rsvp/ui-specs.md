@@ -27,8 +27,9 @@
 
 ### Intro envelope
 
-- Phong thư dùng giấy hồng phấn ấm, các nếp gấp phân lớp bằng sắc độ cùng họ; tránh mảng tím phẳng và đường viền tối.
-- Dấu sáp màu berry trầm, mép hữu cơ tiết chế, có vòng và biểu tượng mũ tốt nghiệp dập nổi; đường kính tối đa 20% chiều cao phong thư.
+- Phong thư dùng giấy lavender–mauve pastel sáng, các nếp gấp phân lớp bằng sắc độ cùng họ và viền champagne.
+- Dấu sáp rose-gold pastel, mép hữu cơ tiết chế, có vòng, chuỗi hạt, nguyệt quế và biểu tượng mũ tốt nghiệp dập nổi; đường kính tối đa 20% chiều cao phong thư.
+- Khi được kích hoạt, dấu có vòng sáng champagne và điểm sao tĩnh xung quanh; không pulse hoặc nhấp nháy opacity.
 - Không đặt label hoặc CTA đè lên mặt dấu; hướng dẫn thao tác nằm ngoài Canvas.
 - Submit bằng nút hoặc Enter.
 - Invalid name: thông báo ngay dưới input, `aria-describedby`, không toast.
