@@ -31,7 +31,8 @@ InvitationCover
 - Canvas texture dùng nền giấy trung tính và `SRGBColorSpace`; material là nguồn màu chính để tránh nhân màu hai lần.
 - Loại bỏ thiệp mini khỏi scene; animation mở chỉ tách dấu và xoay nắp rồi báo hoàn tất.
 - Sửa `components/InvitationCover.tsx` để đồng bộ fallback tĩnh, skeleton và loại bỏ nhãn che con dấu.
-- Không thay đổi state management, callback hoặc `app/page.tsx`.
+- Dùng một PNG khung hoa trong suốt làm decoration nền; phần UI, input và phong bì vẫn là code/Canvas tương tác thật.
+- Không thay đổi state management hoặc callback; `app/page.tsx` chỉ thêm lớp decoration nền không tương tác.
 - Docker topology giữ nguyên service `web`; mọi type-check/build chạy trong container.
 
 ## Phase 4 — Must-haves

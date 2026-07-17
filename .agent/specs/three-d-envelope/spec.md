@@ -27,6 +27,7 @@ Màn mở đầu phải thể hiện rõ một phong thư giấy cao cấp với
 - **FR08**: Màu giấy phải giữ sắc lavender–mauve pastel nhất quán ở cả trạng thái đóng và mở, không chuyển nâu/xám khi nắp xoay.
 - **FR09**: Scene phong bì không được chứa mesh thiệp mini có thể lòi khỏi bao trong sequence mở.
 - **FR10**: Phong bì dùng lavender–mauve pastel sáng, dấu sáp dùng rose-gold pastel; khi kích hoạt phải có vòng sáng champagne tĩnh quanh dấu.
+- **FR11**: Intro mobile phải có khung hoa pastel ở các mép, biểu tượng tốt nghiệp dạng medallion, input viền kép và phong bì chiếm phần lớn chiều rộng như ảnh tham chiếu.
 
 ## 4. Non-Functional Requirements
 

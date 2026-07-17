@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useState, useEffect, useRef, Suspense } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import InvitationCover from '@/components/InvitationCover';
@@ -195,9 +196,19 @@ function InvitationMain() {
   };
 
   return (
-    <main className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-pastel-pink/40 px-4 py-8 md:px-8 md:py-12" onPointerDown={handlePointerDown}>
-      {/* Hiệu ứng cánh hoa rơi lung linh ở nền */}
-      <RosePetals count={28} />
+    <main className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-[#FFF6F8] px-4 py-8 md:px-8 md:py-12" onPointerDown={handlePointerDown}>
+      {stage !== 'invitation' ? (
+        <Image
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-0 z-0 h-dvh w-dvw object-cover opacity-90"
+          height={1536}
+          priority
+          sizes="100vw"
+          src="/images/pastel-floral-frame.png"
+          width={1024}
+        />
+      ) : null}
 
       {/* Nút điều khiển nhạc nền quay tròn dễ thương */}
       <button

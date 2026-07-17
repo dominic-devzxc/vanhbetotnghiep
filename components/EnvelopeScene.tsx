@@ -25,6 +25,7 @@ interface EnvelopeSceneProps {
 const envelopeWidth = 4.35;
 const envelopeHeight = 2.66;
 const envelopeDepth = 0.16;
+const waxSealScale = 1.12;
 const ornamentDots = Array.from({ length: 12 }, (_, index) => {
   const angle = (index / 12) * Math.PI * 2;
   return [Math.cos(angle) * 0.242, Math.sin(angle) * 0.242] as const;
@@ -73,7 +74,7 @@ function createWaxSealShape() {
 
   for (let index = 0; index <= segments; index += 1) {
     const angle = (index / segments) * Math.PI * 2;
-    const radius = 0.355 + Math.sin(angle * 7) * 0.012 + Math.sin(angle * 11 + 0.8) * 0.008;
+    const radius = 0.39 + Math.sin(angle * 7) * 0.014 + Math.sin(angle * 11 + 0.8) * 0.009;
     const x = Math.cos(angle) * radius;
     const y = Math.sin(angle) * radius;
     if (index === 0) shape.moveTo(x, y);
@@ -249,7 +250,7 @@ function EnvelopeModel({
       flapPivot.current.rotation.x = MathUtils.damp(flapPivot.current.rotation.x, 0, 7, delta);
       waxSeal.current.position.set(0, -0.22, 0.29);
       waxSeal.current.rotation.set(0, 0, 0);
-      waxSeal.current.scale.setScalar(1);
+      waxSeal.current.scale.setScalar(waxSealScale);
       camera.position.z = MathUtils.damp(camera.position.z, 5.3, 4, delta);
       camera.position.y = MathUtils.damp(camera.position.y, 0.52, 4, delta);
       camera.lookAt(0, 0, 0);
@@ -266,7 +267,7 @@ function EnvelopeModel({
 
     waxSeal.current.position.set(0, -0.22 + easedSeal * 0.28, 0.29 + easedSeal * 0.4);
     waxSeal.current.rotation.set(easedSeal * 0.16, 0, easedSeal * 0.18);
-    waxSeal.current.scale.setScalar(Math.max(0.01, 1 - easedSeal));
+    waxSeal.current.scale.setScalar(Math.max(0.01, waxSealScale * (1 - easedSeal)));
     flapPivot.current.rotation.x = -Math.PI * 0.972 * easedFlap;
     envelope.position.y = MathUtils.damp(envelope.position.y, 0, 6, delta);
     envelope.rotation.x = MathUtils.damp(envelope.rotation.x, -0.15, 6, delta);
@@ -285,34 +286,46 @@ function EnvelopeModel({
     <group name="envelopeGroup" ref={envelopeGroup} rotation={[-0.06, 0, 0]}>
       <mesh castShadow name="envelopeBody" receiveShadow position={[0, 0, 0]}>
         <boxGeometry args={[envelopeWidth, envelopeHeight, envelopeDepth]} />
-        <meshStandardMaterial color="#DFCFDF" map={paperTexture ?? undefined} roughness={0.88} metalness={0} />
+        <meshStandardMaterial color="#D7C0DE" map={paperTexture ?? undefined} roughness={0.88} metalness={0} />
       </mesh>
 
       <mesh castShadow name="leftFold" position={[0, 0, envelopeDepth / 2 + 0.018]}>
         <extrudeGeometry args={[leftFold, { depth: 0.035, bevelEnabled: false }]} />
-        <meshStandardMaterial color="#CDB9D0" roughness={0.88} side={DoubleSide} />
+        <meshStandardMaterial color="#B89CC2" roughness={0.88} side={DoubleSide} />
       </mesh>
       <mesh castShadow name="rightFold" position={[0, 0, envelopeDepth / 2 + 0.019]}>
         <extrudeGeometry args={[rightFold, { depth: 0.034, bevelEnabled: false }]} />
-        <meshStandardMaterial color="#E7D9E8" roughness={0.88} side={DoubleSide} />
+        <meshStandardMaterial color="#D8C2DF" roughness={0.88} side={DoubleSide} />
       </mesh>
       <mesh castShadow name="bottomFold" position={[0, 0, envelopeDepth / 2 + 0.06]}>
         <extrudeGeometry args={[bottomFold, { depth: 0.035, bevelEnabled: false }]} />
-        <meshStandardMaterial color="#D9C7DC" roughness={0.86} side={DoubleSide} />
+        <meshStandardMaterial color="#C9ADD1" roughness={0.86} side={DoubleSide} />
+      </mesh>
+      <mesh position={[-1.0875, -0.495, envelopeDepth / 2 + 0.102]} rotation={[0, 0, 0.655]}>
+        <boxGeometry args={[2.742, 0.014, 0.022]} />
+        <meshStandardMaterial color="#E0B77F" metalness={0.1} roughness={0.5} />
+      </mesh>
+      <mesh position={[1.0875, -0.495, envelopeDepth / 2 + 0.102]} rotation={[0, 0, -0.655]}>
+        <boxGeometry args={[2.742, 0.014, 0.022]} />
+        <meshStandardMaterial color="#E0B77F" metalness={0.1} roughness={0.5} />
+      </mesh>
+      <mesh position={[0, -1.326, envelopeDepth / 2 + 0.102]}>
+        <boxGeometry args={[4.33, 0.014, 0.022]} />
+        <meshStandardMaterial color="#E0B77F" metalness={0.1} roughness={0.5} />
       </mesh>
 
       <group name="flapPivot" position={[0, envelopeHeight / 2, envelopeDepth / 2 + 0.04]} ref={flapPivot}>
         <mesh castShadow name="topFlap" position={[0, 0, 0]}>
           <extrudeGeometry args={[topFlap, { depth: 0.055, bevelEnabled: false }]} />
-          <meshStandardMaterial color="#E9DDEA" map={paperTexture ?? undefined} roughness={0.86} side={DoubleSide} />
+          <meshStandardMaterial color="#E5D3EA" map={paperTexture ?? undefined} roughness={0.86} side={DoubleSide} />
         </mesh>
         <mesh position={[-1.07, -0.77, 0.062]} rotation={[0, 0, -0.62]}>
           <boxGeometry args={[2.57, 0.016, 0.025]} />
-          <meshStandardMaterial color="#DDBEA4" metalness={0.08} roughness={0.55} />
+          <meshStandardMaterial color="#E0B77F" metalness={0.1} roughness={0.5} />
         </mesh>
         <mesh position={[1.07, -0.77, 0.062]} rotation={[0, 0, 0.62]}>
           <boxGeometry args={[2.57, 0.016, 0.025]} />
-          <meshStandardMaterial color="#DDBEA4" metalness={0.08} roughness={0.55} />
+          <meshStandardMaterial color="#E0B77F" metalness={0.1} roughness={0.5} />
         </mesh>
       </group>
 
@@ -331,7 +344,7 @@ function EnvelopeModel({
           <extrudeGeometry
             args={[waxSealShape, { bevelEnabled: true, bevelSegments: 3, bevelSize: 0.022, bevelThickness: 0.018, curveSegments: 64, depth: 0.12 }]}
           />
-          <meshStandardMaterial color={armed ? "#E4A0A5" : "#DBBBC2"} metalness={armed ? 0.16 : 0.08} roughness={armed ? 0.4 : 0.52} />
+          <meshStandardMaterial color={armed ? "#E9959F" : "#DDB8C0"} metalness={armed ? 0.18 : 0.08} roughness={armed ? 0.36 : 0.52} />
         </mesh>
 
         <SealHalo armed={armed} />

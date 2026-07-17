@@ -28,3 +28,6 @@
 - [X] T012 [P] [US1] Chuyển phong bì và dấu sáp sang palette pastel sáng, cân lại ánh sáng trong `components/EnvelopeScene.tsx`.
 - [X] T013 [P] [US2] Xóa thiệp mini và timeline trượt khỏi `components/EnvelopeScene.tsx`, đồng bộ props tại `components/InvitationCover.tsx`.
 - [X] T014 [P] [US1] Áp dụng palette theo ảnh tham chiếu và vòng sáng tĩnh quanh dấu trong `components/EnvelopeScene.tsx`, `components/InvitationCover.tsx`.
+- [X] T015 [P] [US1] Tạo và tách nền khung hoa pastel tại `public/images/pastel-floral-frame.png`.
+- [X] T016 [P] [US1] Tích hợp khung hoa, medallion header và input viền kép trong `app/page.tsx`, `components/InvitationCover.tsx`.
+- [X] T017 [P] [US1] Tăng độ đậm lavender, kích thước phong bì và dấu sáp theo ảnh tham chiếu trong `components/EnvelopeScene.tsx`.
