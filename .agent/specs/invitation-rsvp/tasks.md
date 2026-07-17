@@ -88,3 +88,7 @@ created: 2026-07-17
 ## Phase 16: Flower motion scale
 
 - [X] T033 [US1] Tăng kích thước cánh hoa rơi, giữ nguyên mật độ hiệu ứng tại `app/page.tsx`; xác nhận bằng Docker build.
+
+## Phase 17: Click feedback
+
+- [X] T034 [US1] Thêm vòng sáng pastel phản hồi tại vị trí chạm/click, tôn trọng reduced motion, trong `app/page.tsx`; xác nhận bằng Docker build.

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useState, useEffect, Suspense } from 'react';
+import React, { useCallback, useState, useEffect, useRef, Suspense } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import InvitationCover from '@/components/InvitationCover';
@@ -53,6 +53,8 @@ function InvitationMain() {
   const [name, setName] = useState('');
   const [minimumLoadingDone, setMinimumLoadingDone] = useState(false);
   const [sceneReady, setSceneReady] = useState(false);
+  const [clickRipples, setClickRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
+  const clickSequence = useRef(0);
   const reduceMotion = useReducedMotion();
 
   const markSceneReady = useCallback(() => setSceneReady(true), []);
@@ -88,6 +90,16 @@ function InvitationMain() {
   const handleOpenInvitation = (enteredName: string) => {
     setName(enteredName);
     setStage('opening');
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLElement>) => {
+    if (reduceMotion) return;
+
+    const id = clickSequence.current++;
+    setClickRipples((current) => [...current, { id, x: event.clientX, y: event.clientY }]);
+    window.setTimeout(() => {
+      setClickRipples((current) => current.filter((ripple) => ripple.id !== id));
+    }, 650);
   };
 
   const triggerConfetti = (choice: 'Yes' | 'No') => {
@@ -126,9 +138,24 @@ function InvitationMain() {
   };
 
   return (
-    <main className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-pastel-pink/40 px-4 py-8 md:px-8 md:py-12">
+    <main className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-pastel-pink/40 px-4 py-8 md:px-8 md:py-12" onPointerDown={handlePointerDown}>
       {/* Hiệu ứng cánh hoa rơi lung linh ở nền */}
       <RosePetals />
+
+      <AnimatePresence>
+        {clickRipples.map((ripple) => (
+          <motion.span
+            animate={{ opacity: 0, scale: 2.6 }}
+            aria-hidden="true"
+            className="pointer-events-none fixed z-[60] h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-pastel-purple/60 bg-pastel-rose/25"
+            exit={{ opacity: 0 }}
+            initial={{ opacity: 0.9, scale: 0.25 }}
+            key={ripple.id}
+            style={{ left: ripple.x, top: ripple.y }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+          />
+        ))}
+      </AnimatePresence>
 
       <AnimatePresence>
         {showLoading ? (
