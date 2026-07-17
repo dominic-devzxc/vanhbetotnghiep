@@ -57,6 +57,36 @@ function InvitationMain() {
   const [clickRipples, setClickRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
   const clickSequence = useRef(0);
   const reduceMotion = useReducedMotion();
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+
+  // Preload hình ảnh hoa góc để tránh giật lag khi tải trang
+  useEffect(() => {
+    const imageUrls = [
+      '/images/flower-top-left.png',
+      '/images/flower-bottom-right.png'
+    ];
+
+    let loadedCount = 0;
+    const totalImages = imageUrls.length;
+
+    const handleImageLoad = () => {
+      loadedCount++;
+      if (loadedCount === totalImages) {
+        setImagesLoaded(true);
+      }
+    };
+
+    const handleImageError = () => {
+      handleImageLoad(); // Tiếp tục hiển thị kể cả khi có lỗi load ảnh để tránh kẹt
+    };
+
+    imageUrls.forEach((url) => {
+      const img = new Image();
+      img.src = url;
+      img.onload = handleImageLoad;
+      img.onerror = handleImageError;
+    });
+  }, []);
 
   const markSceneReady = useCallback(() => setSceneReady(true), []);
 
@@ -86,7 +116,7 @@ function InvitationMain() {
     return () => window.clearTimeout(timer);
   }, [reduceMotion, stage]);
 
-  const showLoading = !minimumLoadingDone || !sceneReady;
+  const showLoading = !minimumLoadingDone || !sceneReady || !imagesLoaded;
 
   const handleOpenInvitation = (enteredName: string) => {
     setName(enteredName);
