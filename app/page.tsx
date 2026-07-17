@@ -93,6 +93,15 @@ function InvitationMain() {
     setName(enteredName);
     setSceneOpeningComplete(false);
     setStage('opening');
+
+    // Phát âm thanh mở thư
+    try {
+      const audio = new Audio('/sound/open-letter.mp3');
+      audio.volume = 0.8;
+      audio.play().catch((err) => console.log('Audio playback failed or blocked:', err));
+    } catch (error) {
+      console.log('Audio playback initialization failed:', error);
+    }
   };
 
   const handleSceneOpeningComplete = useCallback(() => {
