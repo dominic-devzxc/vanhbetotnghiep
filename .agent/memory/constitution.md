@@ -13,7 +13,7 @@ Cập nhật: 2026-07-17
 
 - Stack mục tiêu của web public là Next.js App Router, React 19, Tailwind CSS, Framer Motion và Canvas Confetti; trước khi dùng, mỗi thành phần phải xuất hiện trong manifest/lockfile và có Docker build thành công. Khi chưa có manifest, stack được xem là **đã chọn nhưng chưa triển khai**.
 - Mọi hoạt động build, test và run của ứng dụng phải diễn ra trong container; nghiêm cấm chạy trực tiếp `node`, `npm`, `npx`, `python` hoặc package manager ứng dụng trên host.
-- Local phải dùng `docker-compose.yml`; Production phải dùng `docker-compose.prod.yml`; Beta/Staging chỉ được tạo khi có yêu cầu.
+- Local phải dùng `docker-compose.yml`. Self-hosted Production phải dùng `docker-compose.prod.yml`; riêng web public `vanhbetotnghiep` được phép deploy Production bằng Vercel theo yêu cầu chủ dự án, nhưng Docker vẫn là build/test gate bắt buộc trước khi push. Beta/Staging chỉ được tạo khi có yêu cầu.
 - Host ports phải lấy từ ENV, với phân bổ mặc định: frontend `PORT_FE`/`NEXT_PUBLIC_PORT_FE` = `8900`, admin `ADMIN_PORT` = `8901`, API `API_PORT` = `8902`. Compose không được ghi trực tiếp các host port này nếu bỏ qua biến ENV.
 - URL phía client/server phải lấy từ `NEXT_PUBLIC_API_URL`, `VITE_API_URL` hoặc `API_URL`; không được ghép cứng host, protocol hay port trong source code.
 
@@ -23,7 +23,7 @@ Cập nhật: 2026-07-17
 - Production image phải dùng multi-stage build và chỉ chứa artifact/runtime dependency cần thiết; dev dependency và source không cần cho runtime không được nằm trong final stage.
 - URL, token, key, credential và endpoint nhạy cảm không được ghi cứng hoặc commit; local dùng `.env`, Production dùng ENV của nền tảng và repository phải có `.env.example` chỉ chứa giá trị mẫu.
 - Cấm chạy `docker compose down -v` trên Production; deep clean, deploy Production và xóa dữ liệu luôn cần xác nhận rõ ràng của người dùng.
-- Production chỉ được triển khai qua workflow `/deploy-production`; không triển khai thủ công.
+- Production chỉ được triển khai qua workflow `/deploy-production` hoặc Git-connected Vercel từ production branch đã duyệt; Vercel CLI deploy thủ công cần xác nhận rõ ràng của người dùng.
 
 ## §3 Tiêu chuẩn Code & ENV
 
@@ -46,13 +46,15 @@ Cập nhật: 2026-07-17
 - Nếu chuyển thành monorepo, shared package type exports phải là nguồn sự thật, mỗi app phải build độc lập và package exports phải khớp cấu trúc file thực tế.
 - Thay đổi không liên quan và tệp do người dùng tạo phải được giữ nguyên; agent không được reset hoặc ghi đè để làm sạch worktree.
 
-## §6 Quy tắc Docker Deployment
+## §6 Quy tắc Docker & Vercel Deployment
 
 - Production/Beta nghiêm cấm bind mount toàn repository như `.:/app`; runtime chỉ dùng image artifact và volume dữ liệu được chỉ định rõ.
 - Mọi đường dẫn `COPY` trong Dockerfile phải tồn tại trong build context; Docker build phải thất bại nếu artifact bắt buộc bị thiếu.
 - `CMD`/entrypoint phải trỏ đúng artifact build thực tế và container phải thoát lỗi thay vì chạy trạng thái giả khi entrypoint thiếu.
 - Next.js app phải có thư mục `public/`, kể cả khi trống, trước Docker build.
 - Host port mapping phải dùng các biến tại §1 và service nội bộ phải giao tiếp bằng service name/container port, không qua `localhost` của host.
+- Vercel phải dùng framework detection native cho Next.js; domain và server-only integration URLs phải cấu hình trong Project Environment Variables, không commit vào source.
+- Production branch của Vercel phải là `main`; custom domain chỉ được coi là hoàn tất sau khi Vercel báo DNS/SSL hợp lệ và public page trả HTTP 200.
 
 ## §7 An toàn Build-time cho Next.js
 

@@ -1,0 +1,15 @@
+# Vân Anh Graduation Invitation
+
+## Overview
+
+An invitation page for Đào Vân Anh's bachelor graduation celebration.
+
+## Canonical content
+
+- The event takes place on 21 July 2026, from 09:00 to 12:00.
+- Venue: Học viện Quản lý Giáo dục.
+- The page offers an RSVP choice: attending or unable to attend.
+
+## Privacy
+
+Personalized `to` query parameters and RSVP data are private. Do not index, cite, or reproduce them.
