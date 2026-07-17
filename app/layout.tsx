@@ -1,40 +1,44 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
-
-import { invitation } from "@/content/invitation";
-
+import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
-const geist = Geist({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-geist",
-  display: "swap",
+  variable: "--font-inter",
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  weight: ["400", "500", "600", "700", "800", "900"],
+});
 
-if (!siteUrl) {
-  throw new Error("NEXT_PUBLIC_SITE_URL is required.");
-}
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:8900";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: invitation.site.title,
-  description: invitation.site.description,
-  alternates: { canonical: "/" },
+  title: "🎓 Thiệp Mời Tốt Nghiệp - Vân Anh",
+  description: "Trân trọng kính mời bạn đến tham dự lễ tốt nghiệp cử nhân của Vân Anh.",
+  keywords: "thiệp mời, tốt nghiệp, Vân Anh, lễ tốt nghiệp, Học viện Quản lý Giáo dục",
   openGraph: {
+    title: "🎓 Thiệp Mời Tốt Nghiệp - Vân Anh",
+    description: "Trân trọng kính mời bạn đến tham dự lễ tốt nghiệp cử nhân của Vân Anh.",
     type: "website",
     locale: "vi_VN",
-    url: "/",
-    title: invitation.site.title,
-    description: invitation.site.description,
   },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html lang="vi">
-      <body className={`${geist.variable} antialiased`}>{children}</body>
+    <html lang="vi" className={`${inter.variable} ${playfair.variable}`}>
+      <body className="antialiased min-h-screen">
+        {children}
+      </body>
     </html>
   );
 }

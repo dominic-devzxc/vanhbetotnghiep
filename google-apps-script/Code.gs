@@ -1,7 +1,11 @@
 const RSVP_SHEET_NAME = "Trang tính1";
+const RSVP_HEADERS = ["STT", "Họ tên người tham dự", "Trạng thái", "Thời gian gửi"];
 
 function doPost(event) {
+  const lock = LockService.getScriptLock();
+
   try {
+    lock.waitLock(5000);
     const payload = JSON.parse(event.postData.contents || "{}");
     const guestName = String(payload.guestName || "").trim();
     const attendance = payload.attendance;
@@ -15,14 +19,25 @@ function doPost(event) {
     const sheet = spreadsheet.getSheetByName(RSVP_SHEET_NAME) || spreadsheet.getActiveSheet();
 
     if (sheet.getLastRow() === 0) {
-      sheet.appendRow(["Thời gian gửi", "Tên khách mời", "Tham dự"]);
+      sheet.appendRow(RSVP_HEADERS);
+    } else if (sheet.getRange(1, 1, 1, RSVP_HEADERS.length).getValues()[0].join("|") !== RSVP_HEADERS.join("|")) {
+      throw new Error("Sheet header must be: " + RSVP_HEADERS.join(" | "));
     }
 
-    sheet.appendRow([submittedAt, guestName, attendance === "yes" ? "Có" : "Không"]);
+    sheet.appendRow([
+      sheet.getLastRow(),
+      guestName,
+      attendance === "yes" ? "Có" : "Không",
+      submittedAt,
+    ]);
     return jsonResponse({ ok: true });
   } catch (error) {
     console.error(error);
     return jsonResponse({ ok: false, message: "Unable to save RSVP" });
+  } finally {
+    if (lock.hasLock()) {
+      lock.releaseLock();
+    }
   }
 }
 

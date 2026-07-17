@@ -59,7 +59,9 @@ export async function POST(request: Request) {
       signal: controller.signal,
     });
 
-    if (!response.ok) {
+    const result = (await response.json()) as { ok?: unknown };
+
+    if (!response.ok || result.ok !== true) {
       throw new Error("Apps Script rejected RSVP");
     }
 

@@ -1,6 +1,6 @@
 ---
 title: Thiệp mời tốt nghiệp và RSVP Tasks
-status: COMPLETED
+status: IN_PROGRESS
 version: 1.0.0
 created: 2026-07-17
 ---
@@ -39,3 +39,7 @@ created: 2026-07-17
 - [X] T015 [P] [US3] Tạo lockfile, chạy lint/build trong Docker và sửa lỗi trong tối đa 3 tệp mỗi lượt.
 - [X] T016 [P] [US1] Kiểm thử intro/open/Yes/No, layout mobile 390/430 px và contract 320 px bằng browser, đối chiếu `.agent/specs/invitation-rsvp/spec.md`.
 - [X] T017 [P] [US4] Cập nhật task/spec hoàn tất, rà Git diff và chuẩn bị commit trong `.agent/specs/invitation-rsvp/tasks.md`, `spec.md`.
+
+## Phase 6: User-provided artwork
+
+- [ ] T018 [US1] Dùng ảnh thiệp 3D do người dùng cung cấp làm texture của khối thiệp Three.js trong `components/envelope-scene.tsx`; kiểm thử Docker trước khi hoàn tất.
