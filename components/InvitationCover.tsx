@@ -1,21 +1,54 @@
 "use client";
 
-import Image from "next/image";
-import { ArrowRight, Sparkles } from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
-import { useState, type FormEvent } from "react";
+import dynamic from "next/dynamic";
+import { ArrowDown, GraduationCap, Sparkles } from "lucide-react";
+import { useReducedMotion } from "framer-motion";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 
 interface InvitationCoverProps {
   initialName?: string;
   onOpen: (name: string) => void;
+  onSceneReady?: () => void;
+  opening?: boolean;
 }
 
-const invitationArtwork = "/images/3a683aea-88a7-43e7-86fc-8019469ecb0a (1).png";
+const EnvelopeScene = dynamic(() => import("@/components/EnvelopeScene"), {
+  loading: () => <div className="h-full animate-pulse rounded-[1.5rem] bg-pastel-peach/70" />,
+  ssr: false,
+});
 
-export default function InvitationCover({ onOpen, initialName = "" }: InvitationCoverProps) {
+function StaticEnvelope() {
+  return (
+    <div className="flex h-full items-center justify-center" aria-hidden="true">
+      <div className="relative aspect-[1.62] w-[92%] overflow-hidden rounded-xl border border-white/80 bg-pastel-purple shadow-pastel">
+        <div className="absolute inset-0 bg-pastel-accent/35 [clip-path:polygon(0_100%,0_0,52%_57%)]" />
+        <div className="absolute inset-0 bg-pastel-purple [clip-path:polygon(100%_100%,100%_0,48%_57%)]" />
+        <div className="absolute inset-0 bg-pastel-purple/90 [clip-path:polygon(0_100%,100%_100%,50%_42%)]" />
+        <div className="absolute inset-0 bg-pastel-purple [clip-path:polygon(0_0,100%_0,50%_61%)]" />
+      </div>
+    </div>
+  );
+}
+
+export default function InvitationCover({
+  initialName = "",
+  onOpen,
+  onSceneReady,
+  opening = false,
+}: InvitationCoverProps) {
   const [name, setName] = useState(initialName);
   const [error, setError] = useState("");
+  const [loading3d, setLoading3d] = useState(true);
   const reduceMotion = useReducedMotion();
+
+  const handleSceneReady = useCallback(() => {
+    setLoading3d(false);
+    onSceneReady?.();
+  }, [onSceneReady]);
+
+  useEffect(() => {
+    if (reduceMotion) onSceneReady?.();
+  }, [onSceneReady, reduceMotion]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -30,69 +63,86 @@ export default function InvitationCover({ onOpen, initialName = "" }: Invitation
   }
 
   return (
-    <section className="w-full max-w-sm perspective-1000 sm:max-w-md" aria-labelledby="letter-title">
-      <motion.div
-        animate={reduceMotion ? { rotateX: 0, rotateY: 0, y: 0 } : { rotateX: [3, -2, 3], rotateY: [-3, 3, -3], y: [0, -5, 0] }}
-        className="preserve-3d relative overflow-hidden rounded-[2rem] border border-white/80 bg-pastel-pink p-3 shadow-pastel sm:p-4"
-        initial={{ opacity: 0, rotateX: 12, rotateY: -12, scale: 0.94 }}
-        transition={{ duration: 7, ease: "easeInOut", repeat: reduceMotion ? 0 : Infinity }}
-      >
-        <div className="pointer-events-none absolute -left-16 top-1/4 h-40 w-40 rounded-full bg-pastel-purple/40 blur-3xl" />
-        <div className="pointer-events-none absolute -right-16 top-8 h-36 w-36 rounded-full bg-pastel-rose/40 blur-3xl" />
+    <section
+      aria-busy={opening}
+      aria-labelledby="letter-title"
+      className="relative w-full max-w-xl px-1 text-center sm:px-4"
+    >
+      <div aria-hidden="true" className="absolute -left-3 top-6 text-5xl text-pastel-rose/70">❀</div>
+      <div aria-hidden="true" className="absolute -right-2 top-20 text-4xl text-pastel-purple/75">✿</div>
 
-        <div className="relative overflow-hidden rounded-[1.45rem] border border-pastel-rose/40 bg-pastel-peach p-2 shadow-soft">
-          <div className="relative aspect-[1.04] overflow-hidden rounded-[1.05rem]">
-            <Image
-              alt="Bức thư thiệp mời tốt nghiệp 3D của Đào Vân Anh"
-              className="object-cover object-top"
-              fill
-              priority
-              sizes="(max-width: 480px) calc(100vw - 48px), 420px"
-              src={invitationArtwork}
-            />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-pastel-text/40 to-transparent" />
-            <p className="absolute bottom-4 left-0 right-0 text-center font-handwriting text-3xl text-white drop-shadow-sm">Gửi đến một người đặc biệt</p>
+      <header className="relative">
+        <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full border border-white/90 bg-white/60 text-pastel-text shadow-soft backdrop-blur-sm">
+          <GraduationCap aria-hidden="true" className="h-7 w-7" />
+        </div>
+        <h1
+          className="mx-auto mt-2 max-w-lg font-serif text-[2.65rem] font-semibold leading-[0.98] tracking-[-0.045em] text-pastel-text sm:text-6xl"
+          id="letter-title"
+        >
+          Thiệp mời tốt nghiệp
+        </h1>
+        <p className="mt-2 font-serif text-xl italic text-pastel-accent sm:text-2xl">Nhập tên để mở thư</p>
+        <div aria-hidden="true" className="mx-auto mt-2 flex max-w-[13rem] items-center gap-3 text-pastel-rose">
+          <span className="h-px flex-1 bg-current" />
+          <span className="text-sm">♥</span>
+          <span className="h-px flex-1 bg-current" />
+        </div>
+      </header>
+
+      <form className="mx-auto mt-4 max-w-md text-left" id="guest-name-form" onSubmit={handleSubmit}>
+        <label className="mb-1.5 block pl-3 text-sm font-semibold text-pastel-text" htmlFor="guest-name">
+          Tên gọi thân mật của bạn
+        </label>
+        <div className="rounded-full border border-white/90 bg-white/55 p-1.5 shadow-pastel backdrop-blur-md focus-within:ring-4 focus-within:ring-pastel-purple/35">
+          <input
+            aria-describedby={error ? "guest-name-error" : undefined}
+            aria-invalid={Boolean(error)}
+            autoComplete="name"
+            className="h-12 min-w-0 flex-1 rounded-full bg-white/75 px-4 text-base font-medium text-pastel-text outline-none placeholder:text-pastel-text/45"
+            disabled={opening}
+            id="guest-name"
+            maxLength={80}
+            onChange={(event) => {
+              setName(event.target.value);
+              if (error) setError("");
+            }}
+            placeholder="Ví dụ: Linh, chị Hương…"
+            value={name}
+          />
+        </div>
+        {error ? <p className="mt-2 pl-3 text-sm font-medium text-[#9C3D6D]" id="guest-name-error" role="alert">{error}</p> : null}
+      </form>
+
+      <div className="mt-3 flex items-center justify-center gap-2 font-serif text-sm italic text-pastel-text/75">
+        <span>Nhập tên xong, chạm vào con dấu nhé</span>
+        <ArrowDown aria-hidden="true" className="h-4 w-4" />
+      </div>
+
+      <div className="relative left-1/2 mt-1 h-[15rem] w-[calc(100%+1.5rem)] max-w-[36rem] -translate-x-1/2 sm:h-[18rem]">
+        {reduceMotion ? (
+          <StaticEnvelope />
+        ) : (
+          <EnvelopeScene animate onReady={handleSceneReady} opening={opening} />
+        )}
+        {loading3d && !reduceMotion ? (
+          <div className="absolute inset-4 flex items-center justify-center rounded-[1.5rem] bg-pastel-pink/85">
+            <p className="flex items-center gap-2 text-sm font-semibold text-pastel-text">
+              <Sparkles aria-hidden="true" className="h-5 w-5 animate-pulse" /> Đang dựng phong thư…
+            </p>
           </div>
-        </div>
-
-        <div className="relative px-2 pb-3 pt-6 text-center">
-          <p className="flex items-center justify-center gap-2 text-xs font-bold tracking-[0.18em] text-pastel-accent uppercase">
-            <Sparkles aria-hidden="true" className="h-3.5 w-3.5" /> Một bức thư nhỏ
-          </p>
-          <h1 className="mt-3 font-serif text-4xl leading-none font-semibold tracking-[-0.05em] text-pastel-text sm:text-5xl" id="letter-title">
-            Thân gửi
-          </h1>
-          <p className="mx-auto mt-3 max-w-xs text-sm leading-6 text-pastel-text/75">
-            Vân Anh có một lời mời dành riêng cho bạn.
-          </p>
-
-          <form className="mt-6 text-left" onSubmit={handleSubmit}>
-            <label className="mb-2 block text-sm font-semibold text-pastel-text" htmlFor="guest-name">
-              Vân Anh thường gọi bạn là gì?
-            </label>
-            <input
-              aria-describedby={error ? "guest-name-error" : undefined}
-              aria-invalid={Boolean(error)}
-              autoComplete="name"
-              className="h-14 w-full rounded-2xl border border-pastel-rose/70 bg-white/80 px-4 text-base font-medium text-pastel-text outline-none placeholder:text-pastel-text/45 focus:border-pastel-accent focus:ring-4 focus:ring-pastel-purple/35"
-              id="guest-name"
-              maxLength={80}
-              onChange={(event) => {
-                setName(event.target.value);
-                if (error) setError("");
-              }}
-              placeholder="Ví dụ: Linh, chị Hương…"
-              value={name}
-            />
-            {error ? <p className="mt-2 text-sm font-medium text-[#9C3D6D]" id="guest-name-error" role="alert">{error}</p> : null}
-
-            <button className="mt-3 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-pastel-text px-5 text-base font-semibold text-white shadow-soft transition hover:bg-[#65466F] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-pastel-purple/70" type="submit">
-              Mở thư <ArrowRight aria-hidden="true" className="h-5 w-5" />
-            </button>
-            <p className="mt-3 text-center text-xs text-pastel-text/60">Nhấn Enter hoặc chạm để mở thiệp</p>
-          </form>
-        </div>
-      </motion.div>
+        ) : null}
+        {(!loading3d || reduceMotion) && !opening ? (
+          <button
+            aria-label="Mở thư bằng con dấu hoa"
+            className="absolute left-1/2 top-1/2 z-20 h-24 w-24 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-transparent active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-pastel-text/50"
+            disabled={opening}
+            form="guest-name-form"
+            type="submit"
+          >
+            <span className="sr-only">Mở thư</span>
+          </button>
+        ) : null}
+      </div>
     </section>
   );
 }

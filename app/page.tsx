@@ -1,33 +1,34 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useCallback, useState, useEffect, Suspense } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import InvitationCover from '@/components/InvitationCover';
 import InvitationCard from '@/components/InvitationCard';
 
-// Tạo hiệu ứng cánh hoa hồng rơi
-function RosePetals() {
-  const [petals, setPetals] = useState<Array<{ id: number; left: string; delay: string; duration: string; size: string }>>([]);
+// Tạo hiệu ứng hoa anh đào rơi nhẹ
+function RosePetals({ count = 9 }: { count?: number }) {
+  const [petals, setPetals] = useState<Array<{ id: number; left: string; delay: string; duration: string; size: string; glyph: string }>>([]);
 
   useEffect(() => {
     // Chỉ tạo cánh hoa ở phía Client
-    const generatedPetals = Array.from({ length: 15 }).map((_, index) => ({
+    const generatedPetals = Array.from({ length: count }).map((_, index) => ({
       id: index,
       left: `${Math.random() * 100}%`,
       delay: `${Math.random() * 8}s`,
       duration: `${10 + Math.random() * 15}s`,
-      size: `${12 + Math.random() * 16}px`,
+      size: `${7 + Math.random() * 6}px`,
+      glyph: index % 3 === 0 ? '🌸' : '❀',
     }));
     setPetals(generatedPetals);
-  }, []);
+  }, [count]);
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
       {petals.map((petal) => (
         <span
           key={petal.id}
-          className="absolute block text-pastel-rose/30 opacity-70 pointer-events-none"
+          className="pointer-events-none absolute block text-pastel-rose/35 opacity-45 will-change-transform"
           style={{
             left: petal.left,
             animationDelay: petal.delay,
@@ -39,7 +40,7 @@ function RosePetals() {
             top: '-5%',
           }}
         >
-          ❀
+          {petal.glyph}
         </span>
       ))}
     </div>
@@ -48,10 +49,13 @@ function RosePetals() {
 
 // Component xử lý chính bao bọc trong Suspense để đọc URL SearchParams
 function InvitationMain() {
-  const [step, setStep] = useState<1 | 2>(1);
+  const [stage, setStage] = useState<'cover' | 'opening' | 'invitation'>('cover');
   const [name, setName] = useState('');
-  const googleScriptUrl = process.env.NEXT_PUBLIC_GOOGLE_APPS_SCRIPT_URL || 
-    'https://script.google.com/macros/s/AKfycbxEaNELLVcf6o3ZSjN4LEyBUpj_QTn-KOCIVOB6j_FtqFUQVFp2PrJ6G3WohQYjpUSZ/exec';
+  const [minimumLoadingDone, setMinimumLoadingDone] = useState(false);
+  const [sceneReady, setSceneReady] = useState(false);
+  const reduceMotion = useReducedMotion();
+
+  const markSceneReady = useCallback(() => setSceneReady(true), []);
 
   useEffect(() => {
     // Đọc tên từ URL Query (?to=Văn Anh)
@@ -64,9 +68,26 @@ function InvitationMain() {
     }
   }, []);
 
+  useEffect(() => {
+    const timer = window.setTimeout(() => setMinimumLoadingDone(true), 1100);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (stage !== 'opening') return;
+
+    const timer = window.setTimeout(
+      () => setStage('invitation'),
+      reduceMotion ? 250 : 1350,
+    );
+    return () => window.clearTimeout(timer);
+  }, [reduceMotion, stage]);
+
+  const showLoading = !minimumLoadingDone || !sceneReady;
+
   const handleOpenInvitation = (enteredName: string) => {
     setName(enteredName);
-    setStep(2);
+    setStage('opening');
   };
 
   const triggerConfetti = (choice: 'Yes' | 'No') => {
@@ -105,22 +126,83 @@ function InvitationMain() {
   };
 
   return (
-    <main className="relative min-h-screen flex items-center justify-center py-12 px-4 md:px-8 bg-pastel-pink/40 z-10 overflow-hidden">
+    <main className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-pastel-pink/40 px-4 py-8 md:px-8 md:py-12">
       {/* Hiệu ứng cánh hoa rơi lung linh ở nền */}
       <RosePetals />
 
+      <AnimatePresence>
+        {showLoading ? (
+          <motion.div
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-pastel-pink px-6"
+            exit={{ opacity: 0, scale: 1.03 }}
+            initial={{ opacity: 1 }}
+            transition={{ duration: 0.55, ease: 'easeOut' }}
+          >
+            <RosePetals count={5} />
+            <div className="relative z-10 w-full max-w-xs text-center">
+              <motion.div
+                animate={{ rotate: [0, 8, -6, 0], scale: [0.92, 1.08, 0.98, 0.92], y: [0, -7, 0] }}
+                className="relative mx-auto flex h-28 w-28 items-center justify-center"
+                transition={{ duration: 2.8, ease: 'easeInOut', repeat: Infinity }}
+              >
+                <span className="text-7xl drop-shadow-sm" aria-hidden="true">🌸</span>
+                <motion.span animate={{ rotate: 360, x: [0, 8, 0] }} className="absolute -right-2 top-1 text-2xl" transition={{ duration: 3.2, ease: 'linear', repeat: Infinity }} aria-hidden="true">❀</motion.span>
+                <motion.span animate={{ rotate: -360, x: [0, -6, 0] }} className="absolute -left-1 bottom-2 text-xl text-pastel-rose" transition={{ duration: 3.8, ease: 'linear', repeat: Infinity }} aria-hidden="true">✿</motion.span>
+              </motion.div>
+              <p className="mt-5 font-serif text-2xl font-semibold text-pastel-text">Hoa đang nở, thư sắp mở…</p>
+              <p className="mt-2 text-sm leading-6 text-pastel-text/65">Vân Anh đang chuẩn bị lời mời dành riêng cho bạn.</p>
+              <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-pastel-rose/40">
+                <motion.div
+                  animate={{ scaleX: [0.15, 1, 0.15], x: ['-45%', '45%', '-45%'] }}
+                  className="h-full origin-left rounded-full bg-pastel-accent"
+                  transition={{ duration: 1.6, ease: 'easeInOut', repeat: Infinity }}
+                />
+              </div>
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {stage === 'opening' && !reduceMotion ? (
+          <motion.div
+            animate={{ opacity: [0, 0.08, 0.92, 0.22] }}
+            aria-hidden="true"
+            className="pointer-events-none fixed inset-0 z-40 bg-[radial-gradient(circle_at_center,_#FFFFFF_0%,_#FBEFEF_42%,_#FFE2E2_100%)]"
+            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
+            transition={{ duration: 1.35, ease: 'easeInOut', times: [0, 0.35, 0.72, 1] }}
+          />
+        ) : null}
+      </AnimatePresence>
+
+      <p aria-live="polite" className="sr-only">
+        {stage === 'opening' ? 'Phong thư đang mở. Thiệp mời sắp xuất hiện.' : ''}
+      </p>
+
       <div className="relative w-full z-10">
         <AnimatePresence mode="wait">
-          {step === 1 ? (
+          {stage !== 'invitation' ? (
             <motion.div
               key="cover"
               initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0, y: -20 }}
-              transition={{ duration: 0.6, ease: 'easeInOut' }}
-              className="flex justify-center items-center w-full"
+              animate={stage === 'opening' && !reduceMotion
+                ? { opacity: [1, 1, 0], rotateX: [0, 0, 3], rotateY: [0, 0, -8], scale: [1, 1.03, 0.94], y: [0, -8, -18] }
+                : { opacity: 1, rotateX: 0, rotateY: 0, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={stage === 'opening'
+                ? { duration: reduceMotion ? 0.2 : 1.25, ease: 'easeInOut', times: [0, 0.45, 1] }
+                : { duration: 0.6, ease: 'easeInOut' }}
+              className={`flex w-full items-center justify-center ${stage === 'opening' ? 'pointer-events-none' : ''}`}
+              style={{ perspective: 1200 }}
             >
-              <InvitationCover onOpen={handleOpenInvitation} initialName={name} />
+              <InvitationCover
+                initialName={name}
+                onOpen={handleOpenInvitation}
+                onSceneReady={markSceneReady}
+                opening={stage === 'opening'}
+              />
             </motion.div>
           ) : (
             <motion.div
@@ -132,7 +214,6 @@ function InvitationMain() {
             >
               <InvitationCard 
                 name={name} 
-                googleScriptUrl={googleScriptUrl} 
                 onResponseSubmit={triggerConfetti} 
               />
             </motion.div>

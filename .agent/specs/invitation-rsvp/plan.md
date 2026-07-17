@@ -46,7 +46,7 @@ public/
 
 ## State management
 
-- `stage`: `intro` hoặc `invitation`.
+- `stage`: `cover`, `opening` hoặc `invitation`; loading chỉ kết thúc khi thời gian tối thiểu và scene 3D đều sẵn sàng.
 - `attendance`: `yes`, `no` hoặc `null`.
 - `status`: `idle`, `submitting`, `success`, `error`.
 - Không dùng global store vì chỉ có một flow trên một page.

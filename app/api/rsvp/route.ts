@@ -5,6 +5,7 @@ export const runtime = "nodejs";
 type RsvpPayload = {
   guestName?: unknown;
   attendance?: unknown;
+  message?: unknown;
 };
 
 function invalidResponse() {
@@ -25,6 +26,7 @@ export async function POST(request: Request) {
 
   const guestName = typeof payload.guestName === "string" ? payload.guestName.trim() : "";
   const attendance = payload.attendance;
+  const message = typeof payload.message === "string" ? payload.message.trim().slice(0, 500) : "";
 
   if (!guestName || guestName.length > 80 || (attendance !== "yes" && attendance !== "no")) {
     return invalidResponse();
@@ -54,6 +56,7 @@ export async function POST(request: Request) {
         guestName,
         attendance,
         submittedAt: new Date().toISOString(),
+        message,
       }),
       cache: "no-store",
       signal: controller.signal,

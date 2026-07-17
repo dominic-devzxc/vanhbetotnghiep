@@ -1,6 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -18,9 +20,9 @@ module.exports = {
         }
       },
       fontFamily: {
-        serif: ['var(--font-playfair)', 'serif'],
+        serif: ['var(--font-handwriting)', 'cursive'],
         sans: ['var(--font-inter)', 'sans-serif'],
-        handwriting: ['"Great Vibes"', 'cursive'], // Font viết tay nếu cần
+        handwriting: ['var(--font-handwriting)', 'cursive'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

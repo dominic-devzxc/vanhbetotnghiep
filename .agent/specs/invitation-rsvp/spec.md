@@ -21,7 +21,7 @@ Xây dựng landing page thiệp mời tốt nghiệp mobile-first cho Đào Vâ
 - **FR01**: Màn hình đầu phải có input tên, nút Mở thư và hỗ trợ phím Enter.
 - **FR02**: Tên từ query `to` phải điền sẵn nhưng vẫn có thể chỉnh sửa; tên dài tối đa 80 ký tự.
 - **FR03**: Sau khi mở, thiệp phải hiển thị lời mời, ngày 21/07/2026, thời gian 09:00–12:00 và Học viện Quản lý Giáo dục.
-- **FR04**: Trải nghiệm dùng chuyển cảnh mềm, ánh sáng pastel và mô hình phong thư Three.js 3D; nội dung thiệp vẫn phải đọc được không cần WebGL.
+- **FR04**: Trải nghiệm dùng chuyển cảnh mềm, ánh sáng pastel và mô hình phong thư Three.js 3D; sau loading, khách thấy phong thư, nhập tên rồi phong thư mở ra, màn hình bừng sáng trước khi nội dung thiệp xuất hiện. Nội dung thiệp vẫn phải đọc được không cần WebGL.
 - **FR05**: RSVP phải có hai lựa chọn duy nhất: `yes` và `no`; mỗi lần gửi chứa `guestName`, `attendance`, `submittedAt`.
 - **FR06**: Next.js API phải chuyển RSVP tới Google Apps Script URL lấy từ ENV và trả trạng thái thành công/thất bại rõ ràng.
 - **FR07**: Khi gửi thành công, lựa chọn Yes hiển thị lời cảm ơn; No hiển thị lời hẹn gặp lại.

@@ -1,363 +1,115 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, Calendar, MapPin, Clock, Heart, Award } from 'lucide-react';
-import Image from 'next/image';
+import Image from "next/image";
+import { CalendarDays, Check, Clock3, MapPin, Send, X } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useState } from "react";
+
+type Attendance = "yes" | "no";
+type RsvpStage = "choice" | "message" | "sending" | "success" | "error";
 
 interface InvitationCardProps {
   name: string;
-  googleScriptUrl?: string;
-  onResponseSubmit?: (response: 'Yes' | 'No') => void;
+  onResponseSubmit?: (response: "Yes" | "No") => void;
 }
 
-export default function InvitationCard({ name, googleScriptUrl, onResponseSubmit }: InvitationCardProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [rsvpStatus, setRsvpStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [choice, setChoice] = useState<'Yes' | 'No' | null>(null);
+const invitationArtwork = "/images/3a683aea-88a7-43e7-86fc-8019469ecb0a%20(1).png";
 
-  // Tự động mở thiệp sau khi trang web tải xong
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsOpen(true);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
+const responseCopy = {
+  yes: {
+    title: "Thật tuyệt!",
+    text: "Vân Anh sẽ hạnh phúc lắm khi có bạn ở đó. Cảm ơn bạn đã dành thời gian chung vui trong khoảnh khắc này.",
+  },
+  no: {
+    title: "Thật đáng tiếc!",
+    text: "Vân Anh vẫn rất trân trọng lời chúc của bạn và mong chúng ta sẽ sớm gặp nhau vào một dịp thật gần.",
+  },
+} as const;
 
-  const handleRSVP = async (userChoice: 'Yes' | 'No') => {
-    setChoice(userChoice);
-    setRsvpStatus('loading');
+export default function InvitationCard({ name, onResponseSubmit }: InvitationCardProps) {
+  const [attendance, setAttendance] = useState<Attendance | null>(null);
+  const [message, setMessage] = useState("");
+  const [stage, setStage] = useState<RsvpStage>("choice");
+  const reduceMotion = useReducedMotion();
 
-    if (onResponseSubmit) {
-      onResponseSubmit(userChoice);
-    }
+  function chooseAttendance(choice: Attendance) {
+    setAttendance(choice);
+    setStage("message");
+  }
 
-    if (!googleScriptUrl) {
-      // Nếu không có URL thì mô phỏng thành công
-      setTimeout(() => {
-        setRsvpStatus('success');
-      }, 1000);
-      return;
-    }
+  async function sendResponse() {
+    if (!attendance) return;
+    setStage("sending");
 
     try {
-      // Gửi RSVP đến Google Apps Script
-      // Thường Google Apps Script nhận doGet/doPost. Sử dụng GET kèm query params và no-cors là cách ổn định nhất để tránh lỗi CORS.
-      const url = `${googleScriptUrl}?name=${encodeURIComponent(name)}&response=${encodeURIComponent(userChoice)}`;
-      
-      await fetch(url, {
-        method: 'GET',
-        mode: 'no-cors', // Rất quan trọng để tránh lỗi CORS từ Google Script Redirects
+      const response = await fetch("/api/rsvp", {
+        body: JSON.stringify({ attendance, guestName: name, message: message.trim() }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
       });
 
-      setRsvpStatus('success');
-    } catch (error) {
-      console.error('Lỗi khi gửi phản hồi RSVP:', error);
-      // Vẫn set success để trải nghiệm người dùng không bị gián đoạn, nhưng ghi log lỗi
-      setRsvpStatus('success');
-    }
-  };
+      if (!response.ok) throw new Error("Unable to save RSVP");
 
-  // Cấu hình animation cho cánh cửa bên trái (Phần 1)
-  const leftFoldVariants = {
-    closed: { rotateY: 90, opacity: 0.3 },
-    open: { 
-      rotateY: 0, 
-      opacity: 1,
-      transition: { duration: 1.5, ease: [0.25, 1, 0.5, 1] } 
+      if (attendance === "yes") onResponseSubmit?.("Yes");
+      setStage("success");
+    } catch {
+      setStage("error");
     }
-  };
+  }
 
-  // Cấu hình animation cho cánh cửa bên phải (Phần 3)
-  const rightFoldVariants = {
-    closed: { rotateY: -90, opacity: 0.3 },
-    open: { 
-      rotateY: 0, 
-      opacity: 1,
-      transition: { duration: 1.5, ease: [0.25, 1, 0.5, 1] } 
-    }
-  };
-
-  // Cấu hình cho phần nội dung chính giữa (Phần 2)
-  const centerVariants = {
-    closed: { scale: 0.95, opacity: 0 },
-    open: { 
-      scale: 1, 
-      opacity: 1,
-      transition: { duration: 1, delay: 0.2, ease: "easeOut" } 
-    }
-  };
+  const copy = attendance ? responseCopy[attendance] : null;
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 py-8 perspective-1000">
-      
-      {/* Banner Ruy-băng Thân gửi [Tên khách mời] */}
-      <motion.div 
-        initial={{ y: -30, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.5, duration: 0.8 }}
-        className="relative mx-auto mb-8 max-w-md text-center"
-      >
-        <div className="relative inline-block px-12 py-3 bg-pastel-rose/80 border border-pastel-rose text-pastel-text font-serif text-xl md:text-2xl font-bold rounded-md shadow-soft">
-          {/* Cạnh ruy-băng xéo nhẹ */}
-          <div className="absolute left-[-10px] top-[6px] w-[20px] h-[20px] bg-pastel-rose rotate-45 -z-10 rounded-sm"></div>
-          <div className="absolute right-[-10px] top-[6px] w-[20px] h-[20px] bg-pastel-rose rotate-45 -z-10 rounded-sm"></div>
-          Thân gửi <span className="text-[#9C3D6D] border-b-2 border-dashed border-[#9C3D6D] px-1 font-sans">{name}</span>
+    <section className="mx-auto w-full max-w-md px-1 py-3 sm:px-4" aria-labelledby="invitation-title">
+      <motion.article animate={{ opacity: 1, y: 0 }} className="overflow-hidden rounded-[2rem] border border-white/80 bg-pastel-pink shadow-pastel" initial={{ opacity: 0, y: reduceMotion ? 0 : 18 }} transition={{ duration: reduceMotion ? 0.01 : 0.45 }}>
+        <div className="relative aspect-[4/5] overflow-hidden bg-pastel-peach">
+          <Image alt="Thiệp mời tham dự lễ tốt nghiệp của Đào Vân Anh" className="object-cover object-top" fill priority sizes="(max-width: 480px) calc(100vw - 24px), 448px" src={invitationArtwork} />
+          <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-pastel-text/55 to-transparent" />
+          <p className="absolute bottom-5 left-5 right-5 text-center font-handwriting text-4xl text-white drop-shadow-sm">Trân trọng kính mời</p>
         </div>
-      </motion.div>
 
-      {/* Cấu trúc gấp 3 (Triple Fold-out) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 bg-white/40 border border-white/60 rounded-3xl overflow-hidden shadow-pastel p-2 md:p-4 backdrop-blur-sm">
-        
-        {/* === PHẦN 1: BÊN TRÁI === */}
-        <motion.div
-          variants={leftFoldVariants}
-          initial="closed"
-          animate={isOpen ? "open" : "closed"}
-          className="relative bg-pastel-pink border border-pastel-rose/30 rounded-2xl p-6 md:p-8 flex flex-col justify-between min-h-[450px] shadow-soft origin-right preserve-3d"
-        >
-          {/* Cành hoa góc trên bên trái */}
-          <div className="absolute top-0 left-0 w-20 h-20 text-pastel-rose/40 pointer-events-none transform -scale-x-100">
-            <svg viewBox="0 0 100 100" fill="currentColor">
-              <path d="M50 20 C60 10, 70 20, 65 35 C80 30, 90 40, 75 55 C85 70, 70 85, 55 75 C40 90, 20 80, 30 65 C15 50, 25 30, 40 35 C35 20, 45 10, 50 20 Z" />
-            </svg>
-          </div>
+        <div className="px-6 pb-7 pt-6 sm:px-8">
+          <p className="text-center text-xs font-bold tracking-[0.18em] text-pastel-accent uppercase">Thiệp mời tốt nghiệp</p>
+          <h1 className="mt-3 text-center font-serif text-3xl leading-tight font-semibold text-pastel-text" id="invitation-title">Thân mời <span className="text-[#9C3D6D]">{name}</span></h1>
+          <p className="mt-3 text-center text-base leading-7 text-pastel-text/85">Đến chung vui và chứng kiến khoảnh khắc Vân Anh nhận bằng cử nhân.</p>
 
-          <div className="text-center mt-6">
-            <span className="font-serif text-lg font-bold text-pastel-accent tracking-widest uppercase block mb-1">Phần 1</span>
-            <div className="w-12 h-[1px] bg-pastel-rose/50 mx-auto mb-6"></div>
-            
-            <p className="font-serif text-2xl font-semibold text-pastel-text mb-6">Lời Mời</p>
-            
-            <p className="text-pastel-text/90 leading-relaxed font-sans text-base md:text-lg">
-              Thân mời <span className="font-bold text-pastel-accent">{name}</span> tới tham dự buổi lễ tốt nghiệp và chiêm ngưỡng khoảnh khắc Vân Anh nhận tấm bằng cử nhân.
-            </p>
-          </div>
+          <dl className="mt-6 divide-y divide-pastel-rose/50 rounded-2xl border border-pastel-rose/50 bg-white/55 px-4">
+            <div className="flex gap-3 py-4"><MapPin aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-pastel-accent" /><div><dt className="text-xs font-bold tracking-wide text-pastel-accent uppercase">Địa điểm</dt><dd className="mt-1 font-semibold text-pastel-text">Học viện Quản lý Giáo dục</dd></div></div>
+            <div className="flex gap-3 py-4"><Clock3 aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-pastel-accent" /><div><dt className="text-xs font-bold tracking-wide text-pastel-accent uppercase">Thời gian</dt><dd className="mt-1 font-semibold text-pastel-text">09:00 – 12:00</dd></div></div>
+            <div className="flex gap-3 py-4"><CalendarDays aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-pastel-accent" /><div><dt className="text-xs font-bold tracking-wide text-pastel-accent uppercase">Ngày lễ</dt><dd className="mt-1 font-semibold text-pastel-text">Thứ Ba, 21 tháng 07 năm 2026</dd></div></div>
+          </dl>
 
-          <div className="flex justify-center text-pastel-rose/60 mb-4 animate-bounce">
-            <Award className="w-8 h-8" />
-          </div>
-
-          {/* Hoa hồng chân trang */}
-          <div className="absolute bottom-0 right-0 w-20 h-20 text-pastel-rose/40 pointer-events-none">
-            <svg viewBox="0 0 100 100" fill="currentColor">
-              <path d="M50 20 C60 10, 70 20, 65 35 C80 30, 90 40, 75 55 C85 70, 70 85, 55 75 C40 90, 20 80, 30 65 C15 50, 25 30, 40 35 C35 20, 45 10, 50 20 Z" />
-            </svg>
-          </div>
-        </motion.div>
-
-        {/* === PHẦN 2: Ở GIỮA === */}
-        <motion.div
-          variants={centerVariants}
-          initial="closed"
-          animate={isOpen ? "open" : "closed"}
-          className="relative bg-pastel-pink/95 border-y md:border-y-0 md:border-x border-pastel-rose/30 rounded-2xl p-6 md:p-8 flex flex-col justify-between min-h-[480px] z-10 shadow-md"
-        >
-          <div className="text-center">
-            <span className="font-serif text-lg font-bold text-pastel-accent tracking-widest uppercase block mb-1">Phần 2</span>
-            <div className="w-12 h-[1px] bg-pastel-rose/50 mx-auto mb-4"></div>
-            
-            <p className="font-serif text-lg font-bold text-pastel-text mb-1">Tại Học viện Quản lý Giáo dục</p>
-            <p className="text-xs text-pastel-accent font-semibold mb-4">Phố Trần Quốc Hoàn, Dịch Vọng Hậu, Cầu Giấy, Hà Nội</p>
-          </div>
-
-          {/* Ảnh cử nhân của Vân Anh */}
-          <div className="relative mx-auto w-52 h-64 md:w-56 md:h-72 my-2 rounded-2xl overflow-hidden border-4 border-pastel-rose shadow-pastel group">
-            <Image
-              src="/images/vananh-graduation.png"
-              alt="Vân Anh tốt nghiệp cử nhân"
-              fill
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-              priority
-            />
-            {/* Lớp phủ ruy-băng thắt nơ trang trí */}
-            <div className="absolute -top-1 -right-1 w-12 h-12 text-pastel-purple/90 drop-shadow-md">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-              </svg>
-            </div>
-          </div>
-
-          <div className="text-center mt-2">
-            <p className="font-handwriting text-2xl text-pastel-accent">Vào hồi 9h00 - 12h00</p>
-            <p className="text-sm font-semibold text-pastel-text">ngày 21 tháng 07 năm 2026</p>
-          </div>
-        </motion.div>
-
-        {/* === PHẦN 3: BÊN PHẢI === */}
-        <motion.div
-          variants={rightFoldVariants}
-          initial="closed"
-          animate={isOpen ? "open" : "closed"}
-          className="relative bg-pastel-pink border border-pastel-rose/30 rounded-2xl p-6 md:p-8 flex flex-col justify-between min-h-[450px] shadow-soft origin-left preserve-3d"
-        >
-          {/* Cành hoa góc trên bên phải */}
-          <div className="absolute top-0 right-0 w-20 h-20 text-pastel-rose/40 pointer-events-none">
-            <svg viewBox="0 0 100 100" fill="currentColor">
-              <path d="M50 20 C60 10, 70 20, 65 35 C80 30, 90 40, 75 55 C85 70, 70 85, 55 75 C40 90, 20 80, 30 65 C15 50, 25 30, 40 35 C35 20, 45 10, 50 20 Z" />
-            </svg>
-          </div>
-
-          <div className="text-center mt-6">
-            <span className="font-serif text-lg font-bold text-pastel-accent tracking-widest uppercase block mb-1">Phần 3</span>
-            <div className="w-12 h-[1px] bg-pastel-rose/50 mx-auto mb-6"></div>
-            
-            <p className="font-serif text-2xl font-semibold text-pastel-text mb-6">Phản Hồi</p>
-            
-            <p className="text-pastel-text/90 leading-relaxed font-sans text-base md:text-lg mb-6">
-              Rất mong <span className="font-bold text-pastel-accent">{name}</span> tham gia cùng Vân Anh nhé!
-            </p>
-          </div>
-
-          {/* Khu vực RSVP tương tác */}
-          <div className="space-y-4 my-2 relative z-10">
+          <div className="mt-7" aria-live="polite">
             <AnimatePresence mode="wait">
-              {rsvpStatus === 'idle' || rsvpStatus === 'loading' ? (
-                <div className="flex flex-col gap-3">
-                  <button
-                    disabled={rsvpStatus === 'loading'}
-                    onClick={() => handleRSVP('Yes')}
-                    className="flex items-center justify-between w-full px-6 py-4 bg-white/80 border border-emerald-200 text-emerald-800 rounded-2xl hover:bg-emerald-50 active:scale-95 transition-all duration-300 shadow-soft group"
-                  >
-                    <span className="flex items-center gap-3 font-semibold text-base">
-                      <span className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
-                        <Check className="w-5 h-5" />
-                      </span>
-                      Yes, Thật tuyệt!
-                    </span>
-                    <Heart className="w-5 h-5 text-emerald-400 fill-emerald-100 group-hover:animate-ping" />
-                  </button>
-
-                  <button
-                    disabled={rsvpStatus === 'loading'}
-                    onClick={() => handleRSVP('No')}
-                    className="flex items-center justify-between w-full px-6 py-4 bg-white/80 border border-rose-200 text-rose-800 rounded-2xl hover:bg-rose-50 active:scale-95 transition-all duration-300 shadow-soft group"
-                  >
-                    <span className="flex items-center gap-3 font-semibold text-base">
-                      <span className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 group-hover:scale-110 transition-transform">
-                        <X className="w-5 h-5" />
-                      </span>
-                      No, Tiếc quá...
-                    </span>
-                  </button>
-                </div>
-              ) : rsvpStatus === 'success' ? (
-                <motion.div
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  className={`p-5 rounded-2xl text-center border shadow-soft ${
-                    choice === 'Yes'
-                      ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                      : 'bg-rose-50 border-rose-200 text-rose-800'
-                  }`}
-                >
-                  <p className="font-serif text-lg font-bold mb-2">
-                    {choice === 'Yes' ? '🎉 Thật tuyệt vời!' : '😢 Thật đáng tiếc!'}
-                  </p>
-                  <p className="text-sm leading-relaxed">
-                    {choice === 'Yes'
-                      ? `Hẹn gặp lại ${name} vào 9h00 ngày 21/07/2026 tại lễ tốt nghiệp cử nhân của Vân Anh nha!`
-                      : 'Mong rằng chúng ta sẽ có dịp gặp lại nhau sớm nhất có thể. Cảm ơn bạn rất nhiều!'}
-                  </p>
-                  <button 
-                    onClick={() => setRsvpStatus('idle')}
-                    className="mt-3 text-xs border-b border-current pb-0.5 hover:opacity-70 transition-opacity"
-                  >
-                    Thay đổi câu trả lời
-                  </button>
+              {stage === "choice" ? (
+                <motion.div animate={{ opacity: 1 }} initial={{ opacity: 0 }} key="choice">
+                  <p className="mb-3 text-center text-sm font-semibold text-pastel-text">Bạn có thể đến chung vui không?</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button className="flex h-14 items-center justify-center gap-2 rounded-2xl bg-pastel-text px-3 text-sm font-semibold text-white transition hover:bg-[#65466F] active:scale-[0.98]" onClick={() => chooseAttendance("yes")} type="button"><Check aria-hidden="true" className="h-4 w-4" /> Tham dự</button>
+                    <button className="flex h-14 items-center justify-center gap-2 rounded-2xl border border-pastel-text/30 bg-white/70 px-3 text-sm font-semibold text-pastel-text transition hover:bg-pastel-peach active:scale-[0.98]" onClick={() => chooseAttendance("no")} type="button"><X aria-hidden="true" className="h-4 w-4" /> Không tham dự</button>
+                  </div>
                 </motion.div>
-              ) : (
-                <div className="p-4 bg-red-50 border border-red-200 text-red-800 rounded-2xl text-center">
-                  <p className="font-semibold">Đã có lỗi xảy ra</p>
-                  <button
-                    onClick={() => setRsvpStatus('idle')}
-                    className="mt-2 px-4 py-2 bg-red-100 hover:bg-red-200 rounded-xl text-xs font-bold"
-                  >
-                    Thử lại
-                  </button>
-                </div>
-              )}
+              ) : stage === "success" && copy ? (
+                <motion.div animate={{ opacity: 1, scale: 1 }} className="rounded-2xl border border-pastel-purple/50 bg-pastel-purple/20 p-5 text-center" initial={{ opacity: 0, scale: 0.96 }} key="success">
+                  <p className="font-serif text-xl font-semibold text-pastel-text">{copy.title}</p>
+                  <p className="mt-2 text-sm leading-6 text-pastel-text/80">{copy.text}</p>
+                  <p className="mt-3 text-xs font-semibold text-pastel-accent">Vân Anh đã nhận được phản hồi của bạn.</p>
+                </motion.div>
+              ) : copy ? (
+                <motion.div animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-pastel-purple/40 bg-white/60 p-5" initial={{ opacity: 0, y: 8 }} key="message">
+                  <p className="text-center font-serif text-xl font-semibold text-pastel-text">{copy.title}</p>
+                  <p className="mt-2 text-center text-sm leading-6 text-pastel-text/80">{copy.text}</p>
+                  <label className="mt-5 block text-sm font-semibold text-pastel-text" htmlFor="guest-message">Đôi lời gửi Vân Anh <span className="font-normal text-pastel-text/60">(không bắt buộc)</span></label>
+                  <textarea className="mt-2 min-h-28 w-full resize-y rounded-2xl border border-pastel-rose/70 bg-white/80 px-4 py-3 text-sm leading-6 text-pastel-text outline-none placeholder:text-pastel-text/45 focus:border-pastel-accent focus:ring-4 focus:ring-pastel-purple/35" id="guest-message" maxLength={500} onChange={(event) => setMessage(event.target.value)} placeholder="Viết một lời chúc thật ấm áp…" value={message} />
+                  <button className="mt-3 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-pastel-text px-4 text-sm font-semibold text-white transition hover:bg-[#65466F] active:scale-[0.98] disabled:opacity-60" disabled={stage === "sending"} onClick={sendResponse} type="button"><Send aria-hidden="true" className="h-4 w-4" /> {stage === "sending" ? "Đang gửi" : "Gửi phản hồi"}</button>
+                  {stage === "error" ? <p className="mt-3 text-center text-sm font-medium text-[#9C3D6D]" role="alert">Chưa gửi được phản hồi. Bạn thử lại nhé.</p> : null}
+                </motion.div>
+              ) : null}
             </AnimatePresence>
           </div>
-
-          {/* Hoa hồng chân trang */}
-          <div className="absolute bottom-0 left-0 w-20 h-20 text-pastel-rose/40 pointer-events-none transform -scale-y-100">
-            <svg viewBox="0 0 100 100" fill="currentColor">
-              <path d="M50 20 C60 10, 70 20, 65 35 C80 30, 90 40, 75 55 C85 70, 70 85, 55 75 C40 90, 20 80, 30 65 C15 50, 25 30, 40 35 C35 20, 45 10, 50 20 Z" />
-            </svg>
-          </div>
-        </motion.div>
-
-      </div>
-
-      {/* === FOOTER DECORATIONS (Dưới chân thiệp) === */}
-      <motion.div 
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1, duration: 1 }}
-        className="mt-12 text-center"
-      >
-        {/* Chữ đại diện Hẹn gặp bạn */}
-        <div className="relative inline-block bg-white/50 border border-pastel-rose/40 rounded-2xl px-12 py-6 shadow-pastel backdrop-blur-sm mb-8">
-          <p className="font-serif text-2xl font-semibold text-pastel-text mb-1">
-            Hẹn gặp bạn tại lễ tốt nghiệp của
-          </p>
-          <p className="font-handwriting text-4xl text-[#9C3D6D] font-bold">
-            Vân Anh
-          </p>
+          <p className="mt-7 text-center font-handwriting text-3xl text-pastel-accent">Đào Vân Anh</p>
         </div>
-
-        {/* 4 Khối thông tin chi tiết */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left">
-          
-          <div className="flex items-center gap-3 bg-white/70 border border-pastel-rose/20 rounded-2xl p-4 shadow-soft">
-            <div className="w-10 h-10 rounded-full bg-pastel-rose/50 flex items-center justify-center text-pastel-text">
-              <Calendar className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-xs text-pastel-accent font-bold uppercase tracking-wider">Ngày đáng nhớ</p>
-              <p className="text-sm text-pastel-text font-bold">21 / 07 / 2026</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 bg-white/70 border border-pastel-rose/20 rounded-2xl p-4 shadow-soft">
-            <div className="w-10 h-10 rounded-full bg-pastel-rose/50 flex items-center justify-center text-pastel-text">
-              <MapPin className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-xs text-pastel-accent font-bold uppercase tracking-wider">Địa điểm</p>
-              <p className="text-sm text-pastel-text font-bold truncate max-w-[150px]">HV Quản lý Giáo dục</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 bg-white/70 border border-pastel-rose/20 rounded-2xl p-4 shadow-soft">
-            <div className="w-10 h-10 rounded-full bg-pastel-rose/50 flex items-center justify-center text-pastel-text">
-              <Clock className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-xs text-pastel-accent font-bold uppercase tracking-wider">Thời gian</p>
-              <p className="text-sm text-pastel-text font-bold">9h00 - 12h00</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 bg-white/70 border border-pastel-rose/20 rounded-2xl p-4 shadow-soft">
-            <div className="w-10 h-10 rounded-full bg-pastel-rose/50 flex items-center justify-center text-pastel-text">
-              <Heart className="w-5 h-5 fill-pastel-text" />
-            </div>
-            <div>
-              <p className="text-xs text-pastel-accent font-bold uppercase tracking-wider">Cảm ơn bạn</p>
-              <p className="text-sm text-pastel-text font-bold">Đồng hành cùng Vân Anh</p>
-            </div>
-          </div>
-
-        </div>
-
-        {/* Lời chúc chân trang nhỏ */}
-        <p className="text-xs text-pastel-accent font-semibold mt-8 tracking-wide">
-          Cảm ơn bạn đã là một phần đặc biệt trong hành trình này! ♡
-        </p>
-      </motion.div>
-      
-    </div>
+      </motion.article>
+    </section>
   );
 }

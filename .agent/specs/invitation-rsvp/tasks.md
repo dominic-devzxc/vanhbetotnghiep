@@ -42,4 +42,32 @@ created: 2026-07-17
 
 ## Phase 6: User-provided artwork
 
-- [ ] T018 [US1] Dùng ảnh thiệp 3D do người dùng cung cấp làm texture của khối thiệp Three.js trong `components/envelope-scene.tsx`; kiểm thử Docker trước khi hoàn tất.
+- [X] T018 [US1] Dùng ảnh thiệp 3D do người dùng cung cấp làm texture của phong thư Three.js trong `components/EnvelopeScene.tsx`, có loading UI và fallback giảm chuyển động.
+- [X] T019 [US1] Triển khai hiệu ứng mở thư từ form nhập tên tới thiệp mời trong `components/InvitationCover.tsx`, `app/page.tsx`.
+- [X] T020 [US3] Thiết kế thiệp mời dọc, chọn tham dự/không tham dự, lời cảm ơn và ô đôi lời gửi Vân Anh trong `components/InvitationCard.tsx`.
+- [X] T021 [US3] Gửi lời nhắn tùy chọn cùng RSVP qua `app/api/rsvp/route.ts`, `google-apps-script/Code.gs`.
+
+## Phase 7: Opening transition
+
+- [X] T022 [US1] Thêm chuỗi chuyển cảnh phong thư mở, ánh sáng phủ màn hình rồi hiển thị thiệp trong `app/page.tsx`; kiểm thử Docker và mobile trước khi hoàn tất.
+
+## Phase 8: Reference-matched envelope
+
+- [X] T023 [US1] Thiết kế lại intro theo ảnh mẫu với tiêu đề, input dạng pill, phong bì tím nằm ngang, nắp tam giác và dấu sáp mở bằng Three.js trong `app/page.tsx`, `components/InvitationCover.tsx`, `components/EnvelopeScene.tsx`.
+
+## Phase 9: Motion polish
+
+- [X] T024 [US1] Giảm số lượng, kích thước và độ đậm của hoa anh đào rơi trong `app/page.tsx`; loading dùng mật độ thấp hơn nền chính.
+
+## Phase 10: Wax seal interaction
+
+- [X] T025 [US1] Dùng con dấu sáp hoa văn làm nút mở thư, bổ sung chi tiết nổi cho con dấu Three.js và phóng phong bì gần sát chiều rộng mobile trong `components/InvitationCover.tsx`, `components/EnvelopeScene.tsx`.
+- [X] T026 [US1] Loại bỏ con dấu HTML hữu hình bị tách lớp, giữ hit-area trong suốt để con dấu Three.js là hình ảnh duy nhất trong `components/InvitationCover.tsx`; ghi nguyên nhân tại `.agent/debug/wax-seal-detached.md`.
+
+## Phase 11: Typography polish
+
+- [X] T027 [US1] Thay font trang trí bằng Dancing Script hỗ trợ tiếng Việt và dùng thống nhất cho `font-serif`, `font-handwriting` trong `app/layout.tsx`, `tailwind.config.js`.
+
+## Phase 12: Vercel dependency repair
+
+- [X] T028 [US1] Đồng bộ `package.json`, `package-lock.json` về Next 14/React 18/R3F 8, xác nhận npm install sạch và Docker build trước khi push `main`; ghi RCA tại `.agent/debug/vercel-npm-eresolve.md`.

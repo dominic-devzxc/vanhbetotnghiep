@@ -1,5 +1,5 @@
 const RSVP_SHEET_NAME = "Trang tính1";
-const RSVP_HEADERS = ["STT", "Họ tên người tham dự", "Trạng thái", "Thời gian gửi"];
+const RSVP_HEADERS = ["STT", "Họ tên người tham dự", "Trạng thái", "Thời gian gửi", "Lời nhắn"];
 
 function doPost(event) {
   const lock = LockService.getScriptLock();
@@ -10,6 +10,7 @@ function doPost(event) {
     const guestName = String(payload.guestName || "").trim();
     const attendance = payload.attendance;
     const submittedAt = new Date(payload.submittedAt);
+    const message = String(payload.message || "").trim().slice(0, 500);
 
     if (!guestName || guestName.length > 80 || (attendance !== "yes" && attendance !== "no") || Number.isNaN(submittedAt.getTime())) {
       return jsonResponse({ ok: false, message: "Invalid RSVP payload" });
@@ -29,6 +30,7 @@ function doPost(event) {
       guestName,
       attendance === "yes" ? "Có" : "Không",
       submittedAt,
+      message,
     ]);
     return jsonResponse({ ok: true });
   } catch (error) {
