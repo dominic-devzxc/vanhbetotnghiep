@@ -27,7 +27,9 @@
 
 ### Intro envelope
 
-- Mặt phong thư bằng lớp giấy sáng, viền blush, dấu tròn lavender và input ở trung tâm.
+- Phong thư dùng giấy hồng phấn ấm, các nếp gấp phân lớp bằng sắc độ cùng họ; tránh mảng tím phẳng và đường viền tối.
+- Dấu sáp màu berry trầm, mép hữu cơ tiết chế, có vòng và cành lá dập nổi; đường kính tối đa 20% chiều cao phong thư.
+- Không đặt label hoặc CTA đè lên mặt dấu; hướng dẫn thao tác nằm ngoài Canvas.
 - Submit bằng nút hoặc Enter.
 - Invalid name: thông báo ngay dưới input, `aria-describedby`, không toast.
 

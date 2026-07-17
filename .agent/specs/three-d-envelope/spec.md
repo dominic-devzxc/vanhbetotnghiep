@@ -1,29 +1,41 @@
-# Đặc tả: Phong thư tốt nghiệp Three.js
+---
+title: Phong thư và con dấu sáp 3D
+status: DRAFT
+version: 1.1.0
+created: 2026-07-17
+---
 
-## Mục tiêu
+## 1. Overview
 
-Trang mở đầu hiển thị một phong thư 3D pastel có thể thao tác thật, sau đó chuyển mượt sang thiệp mời hiện có mà không tải lại trang.
+Màn mở đầu phải thể hiện rõ một phong thư giấy cao cấp với con dấu sáp dập nổi, đồng thời giữ nguyên luồng nhập tên và mở thiệp không tải lại trang.
 
-## Luồng người dùng
+## 2. User Scenarios
 
-1. Người dùng thấy nền pastel, trang trí hoa nhẹ, ô nhập tên và phong thư 3D.
-2. Nhấn Enter chỉ xác nhận tên và làm con dấu sáp sáng lên.
-3. Nhấn đúng con dấu sáp để mở thư. Nếu tên trống, ô nhập rung và thông báo hướng dẫn xuất hiện.
-4. Con dấu tách ra, nắp mở qua bản lề, thiệp bên trong trượt lên rồi màn hình sáng nhẹ trước khi sang thiệp mời.
+- **US1**: Là khách mời, tôi muốn nhận ra ngay phong thư và con dấu sáp để trải nghiệm mở thiệp có cảm giác trang trọng, chân thực.
+- **US2**: Là khách mời, tôi muốn nhập tên rồi bấm đúng con dấu để mở thư, nhờ đó luồng tương tác rõ ràng và có chủ đích.
+- **US3**: Là khách mời hạn chế chuyển động, tôi muốn thấy phiên bản tĩnh tương đương để vẫn mở được thiệp thuận tiện.
 
-## Yêu cầu chức năng
+## 3. Functional Requirements
 
-- Cảnh Three.js có các phần độc lập: `envelopeGroup`, `envelopeBody`, `leftFold`, `rightFold`, `bottomFold`, `flapPivot`, `topFlap`, `waxSeal`, `invitationCard`.
-- Phong thư tím `#C5B3D3`, có chiều dày, chất liệu giấy nhám, viền champagne, bóng đổ và camera nhìn chếch từ trên.
-- Con dấu là hình trụ màu hồng ánh kim, có cành hoa nổi; chỉ con dấu nhận thao tác mở thư.
-- Mỗi cảnh dùng dpr tối đa 2, không tạo geometry/material mới trong render loop và hỗ trợ reduced motion.
-- Desktop: khung thư chiếm khoảng 58% chiều rộng; mobile: 90%, không bị cắt.
-- Form có label, thông báo aria-live, Enter để kích hoạt và thao tác bàn phím trên con dấu.
+- **FR01**: Phong thư phải có thân, hai nếp gấp bên, nếp gấp dưới và nắp trên phân biệt được bằng sắc độ giấy.
+- **FR02**: Con dấu phải là một khối sáp đơn có mép hữu cơ, mặt dập nổi và đường kính không quá 20% chiều cao phong thư.
+- **FR03**: Không có nhãn hoặc nút hiển thị đè lên bề mặt con dấu.
+- **FR04**: Chỉ thao tác trên con dấu mới mở thư; khi tên trống phải đưa focus về ô tên và thông báo lỗi.
+- **FR05**: Khi mở, dấu biến mất, nắp xoay gần 175 độ và thiệp trượt lên trước khi chuyển màn.
+- **FR06**: Phiên bản reduced-motion phải giữ hình phong thư, con dấu và thao tác mở tương đương.
+- **FR07**: Nếu cảnh 3D chưa tải được, trạng thái chờ phải giữ đúng khung hình phong thư và không gây dịch chuyển bố cục.
 
-## Tiêu chí nghiệm thu
+## 4. Non-Functional Requirements
 
-- Không có ảnh phong thư đóng làm texture hay PlaneGeometry duy nhất thay thế phong thư.
-- Click ngoài con dấu không mở thư.
-- Khi chưa có tên, con dấu không có trạng thái pointer và click báo “Bạn hãy nhập tên trước nhé!”.
-- Khi mở, nắp xoay gần 175 độ quanh đường gấp trên; thiệp trượt lên rõ ràng.
-- Docker build thành công trước commit/push.
+- **NFR01**: Không thêm dependency hoặc asset ảnh mới cho thay đổi này.
+- **NFR02**: Canvas giới hạn DPR tối đa 2 và không tạo geometry mới trong vòng lặp animation.
+- **NFR03**: CTA và trạng thái focus phải đạt WCAG AA; chuyển động phải tôn trọng `prefers-reduced-motion`.
+- **NFR04**: Type-check và Docker build phải hoàn tất không lỗi.
+
+## 5. Success Criteria
+
+- [X] **SC01**: Ở trạng thái đóng, người xem nhận ra rõ phong thư giấy và một con dấu sáp tròn dập nổi, không còn cụm khối cầu giống bông hoa.
+- [X] **SC02**: Con dấu không bị văn bản che ở desktop hoặc mobile 320 px.
+- [X] **SC03**: Nhập tên, kích hoạt dấu và mở thư vẫn hoạt động như trước.
+- [X] **SC04**: Phiên bản reduced-motion vẫn có thể mở thư bằng bàn phím.
+- [X] **SC05**: Docker build thành công.

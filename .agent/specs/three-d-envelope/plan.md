@@ -1,20 +1,46 @@
 # Kế hoạch kỹ thuật
 
-## Quyết định
+## Phase 0 — Research
 
-- Giữ Next.js, React, React Three Fiber và Framer Motion đang có; không thêm GSAP.
-- Dùng shape/extrude và box/cylinder geometry của Three.js, với `useFrame` điều khiển timeline mở thư.
-- Raycaster do React Three Fiber cung cấp qua handler đặt trực tiếp trên mesh con dấu.
-- Trang trí nền tiếp tục là CSS/React để giảm tải WebGL; chuyển động chính của phong thư vẫn ở Three.js.
+- Cảnh hiện tại đã có đủ mesh và timeline mở thư; không cần đổi kiến trúc hay thêm thư viện.
+- Nguyên nhân sai hình nằm ở con dấu ghép từ bảy sphere lớn và nhãn HTML đặt đè lên Canvas.
+- Three.js `Shape` + `extrudeGeometry` hiện có đủ khả năng tạo mép sáp hữu cơ và họa tiết dập nổi.
 
-## Trình tự
+## Phase 1 — Data model
 
-1. Viết lại `EnvelopeScene` thành các mesh có tên và bản lề thật.
-2. Đổi `InvitationCover` sang luồng: nhập tên → kích hoạt con dấu → click/Enter trên con dấu để mở.
-3. Điều chỉnh điều phối trang mở để thời lượng animation do scene báo hoàn tất.
-4. Docker build và kiểm tra responsive thủ công.
+Không có dữ liệu bền vững mới. Giữ nguyên state `name`, `armed`, `opening` và các callback hiện tại.
 
-## Rủi ro và kiểm soát
+## Phase 2 — API contracts
 
-- Thiết bị yếu: giới hạn DPR 2, số mesh trang trí thấp, không dùng texture ảnh lớn.
-- Reduced motion: bỏ idle animation và rút ngắn sequence nhưng vẫn cho mở bằng bàn phím.
+Không có API mới. Giữ nguyên interface `EnvelopeSceneProps` và `InvitationCoverProps`.
+
+## Phase 3 — Architecture
+
+```text
+InvitationCover
+├── form nhập tên
+├── hướng dẫn mở thư
+└── EnvelopeScene
+    └── EnvelopeModel
+        ├── thân và các nếp gấp giấy
+        ├── nắp mở theo flapPivot
+        ├── thiệp trượt lên
+        └── waxSeal: đĩa sáp hữu cơ + vòng dập + cành lá dập nổi
+```
+
+- Sửa trực tiếp `components/EnvelopeScene.tsx` để thay geometry và palette.
+- Sửa `components/InvitationCover.tsx` để đồng bộ fallback tĩnh, skeleton và loại bỏ nhãn che con dấu.
+- Không thay đổi state management, callback hoặc `app/page.tsx`.
+- Docker topology giữ nguyên service `web`; mọi type-check/build chạy trong container.
+
+## Phase 4 — Must-haves
+
+- **Truths**: Chỉ dấu sáp mở thư; không có tên thì không mở; callback hoàn tất chỉ chạy một lần.
+- **Artifacts**: `EnvelopeScene.tsx`, `InvitationCover.tsx` và tài liệu feature này.
+- **Key links**: `InvitationCover.requestOpen` → `EnvelopeScene.onSealClick`; `EnvelopeScene.onOpenComplete` → callback chuyển màn.
+
+## Constitutional gate
+
+- Phạm vi code gồm 2 tệp, không đổi kiến trúc, không thêm dependency và không hard-code URL/secret.
+- Mỗi task ảnh hưởng tối đa 2 tệp và có thể hoàn thành trong 15 phút.
+- Build gate dùng Docker Compose theo hiến pháp.
