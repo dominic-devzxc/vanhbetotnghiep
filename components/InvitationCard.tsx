@@ -64,7 +64,7 @@ export default function InvitationCard({ name, onResponseSubmit }: InvitationCar
       <motion.article animate={{ opacity: 1, y: 0 }} className="overflow-hidden rounded-[2rem] border border-white/80 bg-pastel-pink shadow-pastel" initial={{ opacity: 0, y: reduceMotion ? 0 : 18 }} transition={{ duration: reduceMotion ? 0.01 : 0.45 }}>
         <div className="relative bg-pastel-peach">
           <img alt="Thiệp mời tham dự lễ tốt nghiệp của Đào Vân Anh" className="w-full h-auto block" src={invitationArtwork} />
-          <p aria-hidden="true" className="absolute inset-x-[17%] bottom-[15%] truncate text-center font-handwriting text-2xl font-semibold leading-none text-pastel-accent drop-shadow-sm sm:text-3xl">
+          <p aria-hidden="true" className="absolute inset-x-[17%] bottom-[18.5%] truncate text-center font-handwriting text-2xl font-semibold leading-none text-pastel-accent drop-shadow-sm sm:text-3xl">
             {name}
           </p>
         </div>
