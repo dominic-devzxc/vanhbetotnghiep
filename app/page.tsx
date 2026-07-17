@@ -57,6 +57,34 @@ function InvitationMain() {
   const [clickRipples, setClickRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
   const clickSequence = useRef(0);
   const reduceMotion = useReducedMotion();
+  const bgAudioRef = useRef<HTMLAudioElement | null>(null);
+  const [musicPlaying, setMusicPlaying] = useState(false);
+
+  useEffect(() => {
+    // Khởi tạo nhạc nền
+    const audio = new Audio('/sound/Graduation Song.mp3');
+    audio.loop = true;
+    audio.volume = 0.45;
+    bgAudioRef.current = audio;
+
+    return () => {
+      if (bgAudioRef.current) {
+        bgAudioRef.current.pause();
+      }
+    };
+  }, []);
+
+  const toggleMusic = () => {
+    if (!bgAudioRef.current) return;
+    if (musicPlaying) {
+      bgAudioRef.current.pause();
+      setMusicPlaying(false);
+    } else {
+      bgAudioRef.current.play()
+        .then(() => setMusicPlaying(true))
+        .catch((err) => console.log('Music play blocked:', err));
+    }
+  };
 
 
   const markSceneReady = useCallback(() => setSceneReady(true), []);
@@ -115,6 +143,13 @@ function InvitationMain() {
   }, [sceneOpeningComplete, stage]);
 
   const handlePointerDown = (event: React.PointerEvent<HTMLElement>) => {
+    // Tự động phát nhạc nền ở tương tác đầu tiên
+    if (bgAudioRef.current && !musicPlaying) {
+      bgAudioRef.current.play()
+        .then(() => setMusicPlaying(true))
+        .catch((err) => console.log('Auto music play blocked:', err));
+    }
+
     if (reduceMotion) return;
 
     const id = clickSequence.current++;
@@ -163,6 +198,19 @@ function InvitationMain() {
     <main className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-pastel-pink/40 px-4 py-8 md:px-8 md:py-12" onPointerDown={handlePointerDown}>
       {/* Hiệu ứng cánh hoa rơi lung linh ở nền */}
       <RosePetals count={28} />
+
+      {/* Nút điều khiển nhạc nền quay tròn dễ thương */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation(); // Ngăn kích hoạt click ripple
+          toggleMusic();
+        }}
+        className={`fixed right-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-white/80 bg-white/60 text-pastel-text shadow-soft backdrop-blur-sm transition-all duration-300 hover:scale-110 active:scale-95 ${musicPlaying ? 'animate-[spin_8s_linear_infinite]' : ''}`}
+        aria-label={musicPlaying ? "Tắt nhạc nền" : "Bật nhạc nền"}
+        type="button"
+      >
+        <span className="text-lg leading-none" style={{ marginTop: '-1px' }}>{musicPlaying ? "🎵" : "🔇"}</span>
+      </button>
 
 
       <AnimatePresence>
