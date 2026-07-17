@@ -153,7 +153,7 @@ function InvitationMain() {
   return (
     <main className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-pastel-pink/40 px-4 py-8 md:px-8 md:py-12" onPointerDown={handlePointerDown}>
       {/* Hiệu ứng cánh hoa rơi lung linh ở nền */}
-      <RosePetals />
+      <RosePetals count={28} />
 
 
       <AnimatePresence>
@@ -180,7 +180,7 @@ function InvitationMain() {
             initial={{ opacity: 1 }}
             transition={{ duration: 0.55, ease: 'easeOut' }}
           >
-            <RosePetals count={5} />
+            <RosePetals count={12} />
             <div className="relative z-10 w-full max-w-xs text-center">
               <motion.div
                 animate={{ rotate: [0, 8, -6, 0], scale: [0.92, 1.08, 0.98, 0.92], y: [0, -7, 0] }}
