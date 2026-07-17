@@ -14,6 +14,11 @@
   - HTTP: `200`
   - Content-Type: `text/html; charset=utf-8`
   - Nội dung bắt đầu bằng trang đăng nhập `accounts.google.com`.
+- Xác minh lại trên Production ngày 2026-07-17:
+  - `POST https://totnghiep.vanhbe.io.vn/api/rsvp` với payload hợp lệ trả HTTP `502` và JSON `{"ok":false,"message":"Chưa gửi được phản hồi. Bạn thử lại nhé."}`.
+  - GET Apps Script `/exec` sau khi theo redirect kết thúc tại `accounts.google.com/v3/signin/identifier`, Content-Type `text/html`.
+  - Vì chưa vào được `doGet()`/`doPost()`, không có bản ghi test nào được ghi vào Sheet.
+  - Đọc trực tiếp sheet `Trang tính1` qua Google Visualization CSV trả HTTP `200` nhưng nội dung rỗng, khớp với việc Apps Script chưa nhận được request.
 
 ## Nguyên nhân gốc
 
