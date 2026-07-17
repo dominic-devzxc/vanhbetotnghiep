@@ -86,7 +86,7 @@ function createTriangle(points: Array<[number, number]>) {
   return shape;
 }
 
-function WaxBranch() {
+function WaxBranch({ armed }: { armed: boolean }) {
   const stem = useMemo(() => {
     const shape = new Shape();
     shape.moveTo(-0.025, -0.17);
@@ -97,25 +97,30 @@ function WaxBranch() {
     return shape;
   }, []);
 
+  // Khi con dấu sáng lên, cành lá sẽ lấp lánh ánh kim loại vàng gold để tạo độ sang trọng
+  const color = armed ? "#EBC5A5" : "#D2BFCE";
+  const metalness = armed ? 0.88 : 0.45;
+  const roughness = armed ? 0.12 : 0.28;
+
   return (
-    <group position={[0, 0, 0.13]}>
+    <group position={[0, 0, 0.115]}>
       <mesh castShadow>
         <shapeGeometry args={[stem]} />
-        <meshStandardMaterial color="#FCE8E0" metalness={0.45} roughness={0.28} />
+        <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />
       </mesh>
       {[-0.1, -0.02, 0.08].flatMap((y, index) => [
         <mesh castShadow key={`left-${y}`} position={[-0.07, y, 0.008]} rotation={[0, 0, -0.7]} scale={[0.8, 0.5, 1]}>
           <sphereGeometry args={[0.075, 12, 12]} />
-          <meshStandardMaterial color="#FCE8E0" metalness={0.42} roughness={0.3} />
+          <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />
         </mesh>,
         <mesh castShadow key={`right-${y}`} position={[0.07, y + 0.025, 0.008]} rotation={[0, 0, 0.7]} scale={[0.8, 0.5, 1]}>
           <sphereGeometry args={[0.075, 12, 12]} />
-          <meshStandardMaterial color="#FCE8E0" metalness={0.42} roughness={0.3} />
+          <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />
         </mesh>,
       ])}
       <mesh castShadow position={[0.01, 0.22, 0.008]}>
         <sphereGeometry args={[0.055, 16, 16]} />
-        <meshStandardMaterial color="#FFEFE8" metalness={0.5} roughness={0.2} />
+        <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />
       </mesh>
     </group>
   );
@@ -182,13 +187,13 @@ function EnvelopeModel({
       envelope.rotation.x = MathUtils.damp(envelope.rotation.x, -0.15 + pointer.y * 0.07, 5, delta);
       envelope.rotation.y = MathUtils.damp(envelope.rotation.y, pointer.x * 0.07, 5, delta);
       flapPivot.current.rotation.x = MathUtils.damp(flapPivot.current.rotation.x, 0, 7, delta);
-      waxSeal.current.position.set(0, -1.31, 0.29);
+      waxSeal.current.position.set(0, -0.22, 0.29);
       waxSeal.current.rotation.set(Math.PI / 2, 0, 0);
       waxSeal.current.scale.setScalar(armed && !reducedMotion ? 1 + Math.sin(elapsed * 2.8) * 0.025 : 1);
       invitationCard.current.position.set(0, -0.05, 0.08);
       invitationCard.current.rotation.set(0, 0, 0);
-      camera.position.z = MathUtils.damp(camera.position.z, 6.15, 4, delta);
-      camera.position.y = MathUtils.damp(camera.position.y, 1.25, 4, delta);
+      camera.position.z = MathUtils.damp(camera.position.z, 5.3, 4, delta);
+      camera.position.y = MathUtils.damp(camera.position.y, 0.52, 4, delta);
       camera.lookAt(0, 0, 0);
       return;
     }
@@ -203,7 +208,7 @@ function EnvelopeModel({
     const easedFlap = flapProgress * flapProgress * (3 - 2 * flapProgress);
     const easedCard = 1 - (1 - cardProgress) ** 3;
 
-    waxSeal.current.position.set(0, -1.31 + easedSeal * 0.28, 0.29 + easedSeal * 0.4);
+    waxSeal.current.position.set(0, -0.22 + easedSeal * 0.28, 0.29 + easedSeal * 0.4);
     waxSeal.current.rotation.set(Math.PI / 2 + easedSeal * 0.16, 0, easedSeal * 0.18);
     waxSeal.current.scale.setScalar(Math.max(0.01, 1 - easedSeal));
     flapPivot.current.rotation.x = -Math.PI * 0.972 * easedFlap;
@@ -212,8 +217,8 @@ function EnvelopeModel({
     envelope.position.y = MathUtils.damp(envelope.position.y, 0, 6, delta);
     envelope.rotation.x = MathUtils.damp(envelope.rotation.x, -0.15, 6, delta);
     envelope.rotation.y = MathUtils.damp(envelope.rotation.y, 0, 6, delta);
-    camera.position.z = MathUtils.damp(camera.position.z, 5.2, 3.5, delta);
-    camera.position.y = MathUtils.damp(camera.position.y, 1.05, 3.5, delta);
+    camera.position.z = MathUtils.damp(camera.position.z, 4.65, 3.5, delta);
+    camera.position.y = MathUtils.damp(camera.position.y, 0.42, 3.5, delta);
     camera.lookAt(0, 0.1, 0);
 
     if (progress === 1 && !completed.current) {
@@ -223,7 +228,7 @@ function EnvelopeModel({
   });
 
   return (
-    <group name="envelopeGroup" ref={envelopeGroup} rotation={[-0.15, 0, 0]}>
+    <group name="envelopeGroup" ref={envelopeGroup} rotation={[-0.06, 0, 0]}>
       <mesh castShadow name="envelopeBody" receiveShadow position={[0, 0, 0]}>
         <boxGeometry args={[envelopeWidth, envelopeHeight, envelopeDepth]} />
         <meshStandardMaterial color="#C5B3D3" map={paperTexture ?? undefined} roughness={0.82} metalness={0.02} />
@@ -258,21 +263,21 @@ function EnvelopeModel({
         </mesh>
         <mesh position={[-1.07, -0.77, 0.062]} rotation={[0, 0, -0.62]}>
           <boxGeometry args={[2.57, 0.021, 0.025]} />
-          <meshStandardMaterial color="#EBC5A5" metalness={0.48} roughness={0.32} />
+          <meshStandardMaterial color="#EBC5A5" metalness={0.88} roughness={0.12} />
         </mesh>
         <mesh position={[1.07, -0.77, 0.062]} rotation={[0, 0, 0.62]}>
           <boxGeometry args={[2.57, 0.021, 0.025]} />
-          <meshStandardMaterial color="#EBC5A5" metalness={0.48} roughness={0.32} />
+          <meshStandardMaterial color="#EBC5A5" metalness={0.88} roughness={0.12} />
         </mesh>
       </group>
 
       <mesh position={[-1.08, -0.5, envelopeDepth / 2 + 0.11]} rotation={[0, 0, 0.56]}>
         <boxGeometry args={[2.5, 0.021, 0.025]} />
-        <meshStandardMaterial color="#EBC5A5" metalness={0.45} roughness={0.3} />
+        <meshStandardMaterial color="#EBC5A5" metalness={0.85} roughness={0.15} />
       </mesh>
       <mesh position={[1.08, -0.5, envelopeDepth / 2 + 0.11]} rotation={[0, 0, -0.56]}>
         <boxGeometry args={[2.5, 0.021, 0.025]} />
-        <meshStandardMaterial color="#EBC5A5" metalness={0.45} roughness={0.3} />
+        <meshStandardMaterial color="#EBC5A5" metalness={0.85} roughness={0.15} />
       </mesh>
 
       <group
@@ -283,20 +288,58 @@ function EnvelopeModel({
           event.stopPropagation();
           setSealCursor(true);
         }}
-        position={[0, -1.31, 0.29]}
+        position={[0, -0.22, 0.29]}
         ref={waxSeal}
         rotation={[Math.PI / 2, 0, 0]}
       >
-        <pointLight color="#F7C6C0" distance={2.1} intensity={armed ? 1.6 : 0.28} />
-        <mesh castShadow>
-          <cylinderGeometry args={[0.49, 0.53, 0.16, 48]} />
-          <meshStandardMaterial color={armed ? "#DE9897" : "#B694AA"} metalness={0.42} roughness={0.31} transparent opacity={armed ? 1 : 0.58} />
+        {/* Đèn phát sáng lung linh của con dấu khi được kích hoạt */}
+        <pointLight color={armed ? "#FFE5D9" : "#F7C6C0"} distance={2.5} intensity={armed ? 4.2 : 0.15} />
+        
+        {/* Vòng hào quang phát sáng xoay nhịp nhàng (glow effect) khi con dấu đã sẵn sàng mở */}
+        {armed && (
+          <mesh position={[0, 0, -0.06]} scale={1.22 + Math.sin(elapsed * 3.5) * 0.035}>
+            <ringGeometry args={[0.45, 0.72, 32]} />
+            <meshBasicMaterial color="#FFE6E6" transparent opacity={0.38 + Math.sin(elapsed * 3.5) * 0.12} side={DoubleSide} />
+          </mesh>
+        )}
+
+        {/* Mặt dẹt chính giữa con dấu sáp */}
+        <mesh castShadow position={[0, 0, 0.02]}>
+          <cylinderGeometry args={[0.44, 0.47, 0.12, 32]} />
+          <meshStandardMaterial color={armed ? "#D88B8A" : "#B694AA"} metalness={0.38} roughness={0.28} transparent opacity={armed ? 1 : 0.65} />
         </mesh>
-        <mesh position={[0, 0, 0.095]}>
-          <torusGeometry args={[0.37, 0.027, 10, 48]} />
-          <meshStandardMaterial color="#F5BCB5" metalness={0.52} roughness={0.25} />
+
+        {/* Viền sáp nóng chảy loang lổ tự nhiên (organic melt shape) tạo từ các hình cầu dẹt lồng ghép */}
+        {Array.from({ length: 7 }).map((_, i) => {
+          const angle = (i * Math.PI * 2) / 7;
+          const radius = 0.4 + Math.sin(i * 1.8) * 0.035;
+          const scale = 0.11 + Math.cos(i * 1.5) * 0.025;
+          return (
+            <mesh
+              key={i}
+              position={[Math.cos(angle) * radius, Math.sin(angle) * radius, 0.01]}
+              scale={[scale * 3.1, scale * 3.1, 0.35]}
+            >
+              <sphereGeometry args={[1, 16, 16]} />
+              <meshStandardMaterial
+                color={armed ? "#D88B8A" : "#B694AA"}
+                metalness={0.35}
+                roughness={0.25}
+                transparent
+                opacity={armed ? 1 : 0.65}
+              />
+            </mesh>
+          );
+        })}
+
+        {/* Vành đai tròn dập nổi màu vàng gold sang trọng */}
+        <mesh position={[0, 0, 0.09]}>
+          <torusGeometry args={[0.34, 0.025, 10, 48]} />
+          <meshStandardMaterial color={armed ? "#E6C387" : "#C4ABB9"} metalness={armed ? 0.85 : 0.4} roughness={armed ? 0.15 : 0.3} />
         </mesh>
-        <WaxBranch />
+
+        {/* Nhành olive mạ vàng gold tinh tế dập nổi ở giữa */}
+        <WaxBranch armed={armed} />
       </group>
     </group>
   );
@@ -305,12 +348,12 @@ function EnvelopeModel({
 function SceneContents(props: EnvelopeSceneProps) {
   return (
     <>
-      <ambientLight intensity={1.25} />
-      <directionalLight castShadow intensity={1.65} position={[-4, 6, 5]} shadow-mapSize={[1024, 1024]} />
-      <spotLight castShadow angle={0.6} intensity={2.1} penumbra={0.7} position={[1.5, 4.5, 5]} />
-      <mesh receiveShadow position={[0, -1.95, -0.65]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[12, 9]} />
-        <shadowMaterial opacity={0.22} />
+      <ambientLight intensity={1.55} />
+      <directionalLight castShadow intensity={1.15} position={[-4, 6, 5]} shadow-mapSize={[1024, 1024]} />
+      <spotLight castShadow angle={0.6} intensity={1.45} penumbra={0.7} position={[1.5, 4.5, 5]} />
+      <mesh position={[0, -1.58, -0.16]} scale={[2.35, 0.24, 1]}>
+        <circleGeometry args={[1, 48]} />
+        <meshBasicMaterial color="#7C5B8B" opacity={0.15} transparent />
       </mesh>
       <EnvelopeModel {...props} />
     </>
@@ -320,7 +363,7 @@ function SceneContents(props: EnvelopeSceneProps) {
 export default function EnvelopeScene(props: EnvelopeSceneProps) {
   return (
     <Canvas
-      camera={{ fov: 34, position: [0, 1.25, 6.15] }}
+      camera={{ fov: 34, position: [0, 0.52, 5.3] }}
       dpr={[1, 2]}
       gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
       shadows
