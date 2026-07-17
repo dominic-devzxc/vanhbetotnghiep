@@ -120,8 +120,15 @@ export default function InvitationCover({
             id="guest-name"
             maxLength={80}
             onChange={(event) => {
-              setName(event.target.value);
-              if (armed) setArmed(false);
+              const val = event.target.value;
+              setName(val);
+              const hasText = val.trim().length > 0;
+              setArmed(hasText);
+              if (hasText) {
+                setNotice("Con dấu đã sáng lên. Bấm vào con dấu để mở thư nhé!");
+              } else {
+                setNotice("");
+              }
             }}
             placeholder="Ví dụ: Linh, chị Hương…"
             ref={inputRef}
@@ -133,7 +140,7 @@ export default function InvitationCover({
 
       <p aria-live="polite" className="mt-2 min-h-5 text-sm font-medium text-[#9C3D6D]">{notice}</p>
       <div className="mt-1 flex items-center justify-center gap-2 font-serif text-sm italic text-pastel-text/75">
-        <span>{armed ? "Bấm vào con dấu hoa để mở thư" : "Nhấn Enter để đánh thức con dấu"}</span>
+        <span>{armed ? "Bấm vào con dấu hoa để mở thư" : "Nhập tên để đánh thức con dấu"}</span>
         <ArrowDown aria-hidden="true" className="h-4 w-4" />
       </div>
 
