@@ -22,3 +22,6 @@
 - [X] T006 [P] Chạy type-check/build bằng Docker, rà soát diff và cập nhật trạng thái task trong `.agent/specs/three-d-envelope/tasks.md`.
 - [X] T007 [P] [US1] Loại bỏ pulse/glow gây nhấp nháy và tách lớp sâu của thiệp khỏi nếp gấp trong `components/EnvelopeScene.tsx`.
 - [X] T008 [P] Chạy repro chiều sâu, type-check, Docker build và kiểm tra render trong `components/EnvelopeScene.tsx`.
+- [X] T009 [P] [US1] Sửa paper texture, color-space và palette mở thư trong `components/EnvelopeScene.tsx`.
+- [X] T010 [P] [US2] Giữ thiệp sau lớp bao thư và chạy Docker gate trong `components/EnvelopeScene.tsx`.
+- [X] T011 [P] [US1] Redesign dấu sáp 3D nhiều lớp với vòng, hạt, nguyệt quế và mũ tốt nghiệp dập nổi trong `components/EnvelopeScene.tsx`.

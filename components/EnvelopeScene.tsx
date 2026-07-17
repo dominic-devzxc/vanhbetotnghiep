@@ -10,6 +10,7 @@ import {
   Mesh,
   RepeatWrapping,
   Shape,
+  SRGBColorSpace,
 } from "three";
 
 interface EnvelopeSceneProps {
@@ -27,7 +28,10 @@ const envelopeWidth = 4.35;
 const envelopeHeight = 2.66;
 const envelopeDepth = 0.16;
 const invitationClosedZ = -0.01;
-const invitationOpenZ = 0.29;
+const ornamentDots = Array.from({ length: 12 }, (_, index) => {
+  const angle = (index / 12) * Math.PI * 2;
+  return [Math.cos(angle) * 0.242, Math.sin(angle) * 0.242] as const;
+});
 
 function createPaperTexture() {
   const canvas = document.createElement("canvas");
@@ -36,11 +40,11 @@ function createPaperTexture() {
   const context = canvas.getContext("2d");
   if (!context) return null;
 
-  context.fillStyle = "#E2C3C1";
+  context.fillStyle = "#FFF9F8";
   context.fillRect(0, 0, 128, 128);
   for (let index = 0; index < 500; index += 1) {
-    const alpha = 0.015 + ((index * 17) % 11) / 500;
-    context.fillStyle = `rgba(105, 63, 72, ${alpha})`;
+    const alpha = 0.008 + ((index * 17) % 11) / 700;
+    context.fillStyle = `rgba(116, 78, 88, ${alpha})`;
     context.fillRect((index * 37) % 128, (index * 53) % 128, 1, 1);
   }
 
@@ -48,6 +52,7 @@ function createPaperTexture() {
   texture.wrapS = RepeatWrapping;
   texture.wrapT = RepeatWrapping;
   texture.repeat.set(3, 3);
+  texture.colorSpace = SRGBColorSpace;
   return texture;
 }
 
@@ -75,7 +80,9 @@ function createInvitationTexture(guestName: string) {
   context.font = "28px Georgia, serif";
   context.fillStyle = "#A66C79";
   context.fillText("Một lời mời dành riêng cho bạn", canvas.width / 2, 332);
-  return new CanvasTexture(canvas);
+  const texture = new CanvasTexture(canvas);
+  texture.colorSpace = SRGBColorSpace;
+  return texture;
 }
 
 function createTriangle(points: Array<[number, number]>) {
@@ -105,50 +112,83 @@ function createWaxSealShape() {
   return shape;
 }
 
-function createLeafShape() {
+function createLaurelLeafShape() {
   const shape = new Shape();
-  shape.moveTo(0, 0);
-  shape.quadraticCurveTo(0.085, 0.025, 0.125, 0.105);
-  shape.quadraticCurveTo(0.035, 0.09, 0, 0);
+  shape.moveTo(-0.04, 0);
+  shape.quadraticCurveTo(0.005, 0.027, 0.052, 0);
+  shape.quadraticCurveTo(0.005, -0.027, -0.04, 0);
   shape.closePath();
   return shape;
 }
 
-function WaxBranch({ armed }: { armed: boolean }) {
-  const stem = useMemo(() => {
-    const shape = new Shape();
-    shape.moveTo(-0.025, -0.17);
-    shape.quadraticCurveTo(0.01, -0.02, -0.01, 0.18);
-    shape.lineTo(0.025, 0.18);
-    shape.quadraticCurveTo(0.045, -0.02, 0.012, -0.17);
-    shape.closePath();
-    return shape;
-  }, []);
-  const leaf = useMemo(createLeafShape, []);
+function createGraduationCapTop() {
+  return createTriangle([[-0.14, 0.035], [0, 0.11], [0.14, 0.035], [0, -0.04]]);
+}
 
-  const color = armed ? "#D98A9C" : "#C7B3BC";
+function createGraduationCapBand() {
+  return createTriangle([[-0.092, -0.035], [0.092, -0.035], [0.07, -0.105], [-0.07, -0.105]]);
+}
+
+function createTasselShape() {
+  return createTriangle([[0.112, 0.032], [0.126, 0.032], [0.105, -0.11], [0.09, -0.11]]);
+}
+
+function WaxMedallion({ armed }: { armed: boolean }) {
+  const leaf = useMemo(createLaurelLeafShape, []);
+  const graduationCapTop = useMemo(createGraduationCapTop, []);
+  const graduationCapBand = useMemo(createGraduationCapBand, []);
+  const tassel = useMemo(createTasselShape, []);
+
+  const color = armed ? "#E7A0B0" : "#CBB3BD";
+  const detailColor = armed ? "#F2C8A8" : "#D9C3C8";
   const metalness = armed ? 0.22 : 0.12;
   const roughness = armed ? 0.36 : 0.48;
+  const emboss = { bevelEnabled: true, bevelSegments: 2, bevelSize: 0.004, bevelThickness: 0.004, depth: 0.018 } as const;
 
   return (
-    <group position={[0, 0, 0.225]}>
+    <group position={[0, 0, 0.222]}>
       <mesh castShadow>
-        <shapeGeometry args={[stem]} />
+        <torusGeometry args={[0.292, 0.016, 12, 64]} />
         <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />
       </mesh>
-      {[-0.11, -0.025, 0.06].flatMap((y) => [
-        <mesh castShadow key={`left-${y}`} position={[-0.018, y, 0.008]} rotation={[0, 0, 2.42]}>
+      <mesh castShadow position={[0, 0, 0.004]}>
+        <torusGeometry args={[0.185, 0.008, 10, 64]} />
+        <meshStandardMaterial color={detailColor} metalness={metalness} roughness={roughness} />
+      </mesh>
+
+      {ornamentDots.map(([x, y], index) => (
+        <mesh castShadow key={`dot-${index}`} position={[x, y, 0.012]}>
+          <circleGeometry args={[index % 3 === 0 ? 0.014 : 0.01, 16]} />
+          <meshStandardMaterial color={detailColor} metalness={metalness} roughness={roughness} />
+        </mesh>
+      ))}
+
+      {[-0.095, -0.03, 0.035, 0.1].flatMap((y, index) => [
+        <mesh castShadow key={`laurel-left-${y}`} position={[-0.135 - index * 0.006, y, 0.014]} rotation={[0, 0, 0.72 + index * 0.12]} scale={0.82}>
           <shapeGeometry args={[leaf]} />
           <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />
         </mesh>,
-        <mesh castShadow key={`right-${y}`} position={[0.018, y + 0.025, 0.008]} rotation={[0, 0, 0.72]}>
+        <mesh castShadow key={`laurel-right-${y}`} position={[0.135 + index * 0.006, y, 0.014]} rotation={[0, 0, 2.42 - index * 0.12]} scale={0.82}>
           <shapeGeometry args={[leaf]} />
           <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />
         </mesh>,
       ])}
-      <mesh castShadow position={[0.005, 0.18, 0.008]} rotation={[0, 0, 1.08]} scale={0.8}>
-        <shapeGeometry args={[leaf]} />
+
+      <mesh castShadow position={[0, 0.012, 0.016]}>
+        <extrudeGeometry args={[graduationCapTop, emboss]} />
+        <meshStandardMaterial color={detailColor} metalness={metalness} roughness={roughness} />
+      </mesh>
+      <mesh castShadow position={[0, 0.002, 0.016]}>
+        <extrudeGeometry args={[graduationCapBand, emboss]} />
         <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />
+      </mesh>
+      <mesh castShadow position={[0, 0.01, 0.017]}>
+        <extrudeGeometry args={[tassel, emboss]} />
+        <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />
+      </mesh>
+      <mesh castShadow position={[0.097, -0.105, 0.04]}>
+        <sphereGeometry args={[0.018, 16, 12]} />
+        <meshStandardMaterial color={detailColor} metalness={metalness} roughness={roughness} />
       </mesh>
     </group>
   );
@@ -241,11 +281,7 @@ function EnvelopeModel({
     waxSeal.current.rotation.set(easedSeal * 0.16, 0, easedSeal * 0.18);
     waxSeal.current.scale.setScalar(Math.max(0.01, 1 - easedSeal));
     flapPivot.current.rotation.x = -Math.PI * 0.972 * easedFlap;
-    invitationCard.current.position.set(
-      0,
-      -0.05 + easedCard * 1.62,
-      MathUtils.lerp(invitationClosedZ, invitationOpenZ, easedCard),
-    );
+    invitationCard.current.position.set(0, -0.05 + easedCard * 1.62, invitationClosedZ);
     invitationCard.current.rotation.x = -0.25 * (1 - easedCard);
     envelope.position.y = MathUtils.damp(envelope.position.y, 0, 6, delta);
     envelope.rotation.x = MathUtils.damp(envelope.rotation.x, -0.15, 6, delta);
@@ -264,7 +300,7 @@ function EnvelopeModel({
     <group name="envelopeGroup" ref={envelopeGroup} rotation={[-0.06, 0, 0]}>
       <mesh castShadow name="envelopeBody" receiveShadow position={[0, 0, 0]}>
         <boxGeometry args={[envelopeWidth, envelopeHeight, envelopeDepth]} />
-        <meshStandardMaterial color="#DAB9B7" map={paperTexture ?? undefined} roughness={0.86} metalness={0.01} />
+        <meshStandardMaterial color="#E9CDD1" map={paperTexture ?? undefined} roughness={0.86} metalness={0.01} />
       </mesh>
 
       <mesh castShadow name="invitationCard" receiveShadow ref={invitationCard} position={[0, -0.05, invitationClosedZ]}>
@@ -278,21 +314,21 @@ function EnvelopeModel({
 
       <mesh castShadow name="leftFold" position={[0, 0, envelopeDepth / 2 + 0.018]}>
         <extrudeGeometry args={[leftFold, { depth: 0.035, bevelEnabled: false }]} />
-        <meshStandardMaterial color="#C7A2A5" roughness={0.86} side={DoubleSide} />
+        <meshStandardMaterial color="#DAB9C0" roughness={0.86} side={DoubleSide} />
       </mesh>
       <mesh castShadow name="rightFold" position={[0, 0, envelopeDepth / 2 + 0.019]}>
         <extrudeGeometry args={[rightFold, { depth: 0.034, bevelEnabled: false }]} />
-        <meshStandardMaterial color="#E0BEC0" roughness={0.86} side={DoubleSide} />
+        <meshStandardMaterial color="#EFDADD" roughness={0.86} side={DoubleSide} />
       </mesh>
       <mesh castShadow name="bottomFold" position={[0, 0, envelopeDepth / 2 + 0.06]}>
         <extrudeGeometry args={[bottomFold, { depth: 0.035, bevelEnabled: false }]} />
-        <meshStandardMaterial color="#D1AAAC" roughness={0.84} side={DoubleSide} />
+        <meshStandardMaterial color="#E4C4C9" roughness={0.84} side={DoubleSide} />
       </mesh>
 
       <group name="flapPivot" position={[0, envelopeHeight / 2, envelopeDepth / 2 + 0.04]} ref={flapPivot}>
         <mesh castShadow name="topFlap" position={[0, 0, 0]}>
           <extrudeGeometry args={[topFlap, { depth: 0.055, bevelEnabled: false }]} />
-          <meshStandardMaterial color="#E5C5C3" map={paperTexture ?? undefined} roughness={0.82} side={DoubleSide} />
+          <meshStandardMaterial color="#F1D7DA" map={paperTexture ?? undefined} roughness={0.82} side={DoubleSide} />
         </mesh>
         <mesh position={[-1.07, -0.77, 0.062]} rotation={[0, 0, -0.62]}>
           <boxGeometry args={[2.57, 0.016, 0.025]} />
@@ -322,11 +358,7 @@ function EnvelopeModel({
           <meshStandardMaterial color={armed ? "#A64A62" : "#A98F9A"} metalness={0.14} roughness={0.44} />
         </mesh>
 
-        <mesh position={[0, 0, 0.218]}>
-          <torusGeometry args={[0.275, 0.018, 12, 64]} />
-          <meshStandardMaterial color={armed ? "#D98A9C" : "#C7B3BC"} metalness={armed ? 0.22 : 0.12} roughness={armed ? 0.36 : 0.48} />
-        </mesh>
-        <WaxBranch armed={armed} />
+        <WaxMedallion armed={armed} />
       </group>
     </group>
   );
