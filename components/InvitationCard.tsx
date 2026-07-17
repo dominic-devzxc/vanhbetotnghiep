@@ -4,6 +4,7 @@ import Image from "next/image";
 import { CalendarDays, Check, Clock3, MapPin, Send, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useState } from "react";
+import confetti from "canvas-confetti";
 
 type Attendance = "yes" | "no";
 type RsvpStage = "choice" | "message" | "sending" | "success" | "error";
@@ -34,6 +35,25 @@ export default function InvitationCard({ name, onResponseSubmit }: InvitationCar
 
   function chooseAttendance(choice: Attendance) {
     setAttendance(choice);
+    
+    if (choice === "yes") {
+      // Bắn pháo hoa giấy chúc mừng khi click chọn Tham dự
+      confetti({
+        particleCount: 50,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.8 },
+        colors: ['#FBEFEF', '#FFE2E2', '#F5CBCB', '#C5B3D3', '#A594C1']
+      });
+      confetti({
+        particleCount: 50,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.8 },
+        colors: ['#FBEFEF', '#FFE2E2', '#F5CBCB', '#C5B3D3', '#A594C1']
+      });
+    }
+
     setStage("message");
   }
 
@@ -83,7 +103,13 @@ export default function InvitationCard({ name, onResponseSubmit }: InvitationCar
           <div className="mt-7" aria-live="polite">
             <AnimatePresence mode="wait">
               {stage === "choice" ? (
-                <motion.div animate={{ opacity: 1 }} initial={{ opacity: 0 }} key="choice">
+                <motion.div
+                  key="choice"
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -30 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
                   <p className="mb-3 text-center text-sm font-semibold text-pastel-text">Bạn có thể đến chung vui không?</p>
                   <div className="grid grid-cols-2 gap-3">
                     <button className="group flex h-14 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#9C3D6D] to-[#7C5B8B] px-3 text-sm font-semibold text-white shadow-soft transition-all duration-300 ease-out hover:from-[#B44B80] hover:to-[#8E699E] hover:shadow-[0_8px_25px_-5px_rgba(156,61,109,0.35)] hover:scale-[1.03] active:scale-[0.97]" onClick={() => chooseAttendance("yes")} type="button">
@@ -97,13 +123,27 @@ export default function InvitationCard({ name, onResponseSubmit }: InvitationCar
                   </div>
                 </motion.div>
               ) : stage === "success" && copy ? (
-                <motion.div animate={{ opacity: 1, scale: 1 }} className="rounded-2xl border border-pastel-purple/50 bg-pastel-purple/20 p-5 text-center" initial={{ opacity: 0, scale: 0.96 }} key="success">
+                <motion.div
+                  key="success"
+                  initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  className="rounded-2xl border border-pastel-purple/50 bg-pastel-purple/20 p-5 text-center"
+                >
                   <p className="font-serif text-xl font-semibold text-pastel-text">{copy.title}</p>
                   <p className="mt-2 text-sm leading-6 text-pastel-text/80">{copy.text}</p>
                   <p className="mt-3 text-xs font-semibold text-pastel-accent">Vân Anh đã nhận được phản hồi của bạn.</p>
                 </motion.div>
               ) : copy ? (
-                <motion.div animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-pastel-purple/40 bg-white/60 p-5" initial={{ opacity: 0, y: 8 }} key="message">
+                <motion.div
+                  key="message"
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 30 }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
+                  className="rounded-2xl border border-pastel-purple/40 bg-white/60 p-5"
+                >
                   <p className="text-center font-serif text-xl font-semibold text-pastel-text">{copy.title}</p>
                   <p className="mt-2 text-center text-sm leading-6 text-pastel-text/80">{copy.text}</p>
                   <label className="mt-5 block text-sm font-semibold text-pastel-text" htmlFor="guest-message">Đôi lời gửi Vân Anh <span className="font-normal text-pastel-text/60">(không bắt buộc)</span></label>
