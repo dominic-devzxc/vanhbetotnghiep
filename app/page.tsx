@@ -57,35 +57,7 @@ function InvitationMain() {
   const [clickRipples, setClickRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
   const clickSequence = useRef(0);
   const reduceMotion = useReducedMotion();
-  const [imagesLoaded, setImagesLoaded] = useState(false);
 
-  // Preload hình ảnh hoa góc để tránh giật lag khi tải trang
-  useEffect(() => {
-    const imageUrls = [
-      '/images/flower-top-left.png'
-    ];
-
-    let loadedCount = 0;
-    const totalImages = imageUrls.length;
-
-    const handleImageLoad = () => {
-      loadedCount++;
-      if (loadedCount === totalImages) {
-        setImagesLoaded(true);
-      }
-    };
-
-    const handleImageError = () => {
-      handleImageLoad(); // Tiếp tục hiển thị kể cả khi có lỗi load ảnh để tránh kẹt
-    };
-
-    imageUrls.forEach((url) => {
-      const img = new Image();
-      img.src = url;
-      img.onload = handleImageLoad;
-      img.onerror = handleImageError;
-    });
-  }, []);
 
   const markSceneReady = useCallback(() => setSceneReady(true), []);
 
@@ -115,7 +87,7 @@ function InvitationMain() {
     return () => window.clearTimeout(timer);
   }, [reduceMotion, stage]);
 
-  const showLoading = !minimumLoadingDone || !sceneReady || !imagesLoaded;
+  const showLoading = !minimumLoadingDone || !sceneReady;
 
   const handleOpenInvitation = (enteredName: string) => {
     setName(enteredName);
@@ -183,27 +155,6 @@ function InvitationMain() {
       {/* Hiệu ứng cánh hoa rơi lung linh ở nền */}
       <RosePetals />
 
-      {/* Hoa trang trí 4 góc */}
-      <img
-        src="/images/flower-top-left.png"
-        alt=""
-        className="absolute left-0 top-0 pointer-events-none mix-blend-multiply select-none z-0 w-[24vw] max-w-[320px] min-w-[120px] origin-top-left opacity-90"
-      />
-      <img
-        src="/images/flower-top-left.png"
-        alt=""
-        className="absolute right-0 top-0 pointer-events-none mix-blend-multiply select-none z-0 w-[24vw] max-w-[320px] min-w-[120px] origin-top-right scale-x-[-1] opacity-90"
-      />
-      <img
-        src="/images/flower-top-left.png"
-        alt=""
-        className="absolute left-0 bottom-0 pointer-events-none mix-blend-multiply select-none z-0 w-[24vw] max-w-[320px] min-w-[120px] origin-bottom-left scale-y-[-1] opacity-90"
-      />
-      <img
-        src="/images/flower-top-left.png"
-        alt=""
-        className="absolute right-0 bottom-0 pointer-events-none mix-blend-multiply select-none z-0 w-[24vw] max-w-[320px] min-w-[120px] origin-bottom-right scale-x-[-1] scale-y-[-1] opacity-90"
-      />
 
       <AnimatePresence>
         {clickRipples.map((ripple) => (
