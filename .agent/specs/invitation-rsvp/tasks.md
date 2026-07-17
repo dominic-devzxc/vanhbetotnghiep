@@ -71,3 +71,7 @@ created: 2026-07-17
 ## Phase 12: Vercel dependency repair
 
 - [X] T028 [US1] Đồng bộ `package.json`, `package-lock.json` về Next 14/React 18/R3F 8, xác nhận npm install sạch và Docker build trước khi push `main`; ghi RCA tại `.agent/debug/vercel-npm-eresolve.md`.
+
+## Phase 13: Input responsive fix
+
+- [X] T029 [US1] Đặt ô nhập tên rộng 100% trong pill container tại `components/InvitationCover.tsx`; xác nhận bằng Docker build.

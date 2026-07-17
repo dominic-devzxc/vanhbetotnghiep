@@ -98,7 +98,7 @@ export default function InvitationCover({
             aria-describedby={error ? "guest-name-error" : undefined}
             aria-invalid={Boolean(error)}
             autoComplete="name"
-            className="h-12 min-w-0 flex-1 rounded-full bg-white/75 px-4 text-base font-medium text-pastel-text outline-none placeholder:text-pastel-text/45"
+            className="h-12 w-full min-w-0 rounded-full bg-white/75 px-4 text-base font-medium text-pastel-text outline-none placeholder:text-pastel-text/45"
             disabled={opening}
             id="guest-name"
             maxLength={80}
