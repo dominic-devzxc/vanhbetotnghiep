@@ -80,7 +80,7 @@ function InvitationMain() {
 
     const timer = window.setTimeout(
       () => setStage('invitation'),
-      reduceMotion ? 250 : 1350,
+      reduceMotion ? 250 : 2750,
     );
     return () => window.clearTimeout(timer);
   }, [reduceMotion, stage]);
@@ -194,12 +194,12 @@ function InvitationMain() {
       <AnimatePresence>
         {stage === 'opening' && !reduceMotion ? (
           <motion.div
-            animate={{ opacity: [0, 0.08, 0.92, 0.22] }}
+            animate={{ opacity: [0, 0.05, 0.95, 0.18, 0] }}
             aria-hidden="true"
             className="pointer-events-none fixed inset-0 z-40 bg-[radial-gradient(circle_at_center,_#FFFFFF_0%,_#FBEFEF_42%,_#FFE2E2_100%)]"
             exit={{ opacity: 0 }}
             initial={{ opacity: 0 }}
-            transition={{ duration: 1.35, ease: 'easeInOut', times: [0, 0.35, 0.72, 1] }}
+            transition={{ duration: 2.75, ease: 'easeInOut', times: [0, 0.32, 0.55, 0.72, 1] }}
           />
         ) : null}
       </AnimatePresence>
@@ -219,7 +219,7 @@ function InvitationMain() {
                 : { opacity: 1, rotateX: 0, rotateY: 0, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96 }}
               transition={stage === 'opening'
-                ? { duration: reduceMotion ? 0.2 : 1.25, ease: 'easeInOut', times: [0, 0.45, 1] }
+                ? { duration: reduceMotion ? 0.2 : 2.25, ease: 'easeInOut', times: [0, 0.7, 1] }
                 : { duration: 0.6, ease: 'easeInOut' }}
               className={`flex w-full items-center justify-center ${stage === 'opening' ? 'pointer-events-none' : ''}`}
               style={{ perspective: 1200 }}
@@ -236,7 +236,7 @@ function InvitationMain() {
               key="card"
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
+              transition={{ duration: 1.15, ease: 'easeOut' }}
               className="w-full"
             >
               <InvitationCard 

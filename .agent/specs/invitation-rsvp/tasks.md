@@ -92,3 +92,11 @@ created: 2026-07-17
 ## Phase 17: Click feedback
 
 - [X] T034 [US1] Thêm vòng sáng pastel phản hồi tại vị trí chạm/click, tôn trọng reduced motion, trong `app/page.tsx`; xác nhận bằng Docker build.
+
+## Phase 18: Full invitation artwork
+
+- [X] T035 [US2] Hiển thị nguyên ảnh thiệp theo đúng tỷ lệ gốc, không crop, giữ tên khách trên dòng chấm, tại `components/InvitationCard.tsx`; xác nhận bằng Docker build.
+
+## Phase 19: Opening light sequence
+
+- [X] T036 [US1] Làm chậm mở thư, thêm nhịp sáng màn hình rõ ràng rồi fade-in thiệp tại `app/page.tsx`; xác nhận bằng Docker build.
