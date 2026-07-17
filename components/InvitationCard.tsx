@@ -112,7 +112,7 @@ export default function InvitationCard({ name, onResponseSubmit }: InvitationCar
                 >
                   <p className="mb-3 text-center text-sm font-semibold text-pastel-text">Bạn có thể đến chung vui không?</p>
                   <div className="grid grid-cols-2 gap-3">
-                    <button className="group flex h-14 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#F5CBCB] to-[#C5B3D3] px-3 text-sm font-bold text-[#7C5B8B] shadow-soft transition-all duration-300 ease-out hover:from-[#FFE2E2] hover:to-[#D4C5E2] hover:shadow-[0_8px_25px_-5px_rgba(245,203,203,0.5)] hover:scale-[1.03] active:scale-[0.97]" onClick={() => chooseAttendance("yes")} type="button">
+                    <button className="group flex h-14 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#FFD8E4] to-[#E8D3FC] px-3 text-sm font-bold text-[#7C5B8B] shadow-soft transition-all duration-300 ease-out hover:from-[#FFE3F0] hover:to-[#F1E2FF] hover:shadow-[0_8px_25px_-5px_rgba(255,216,228,0.65)] hover:scale-[1.03] active:scale-[0.97]" onClick={() => chooseAttendance("yes")} type="button">
                       <Check aria-hidden="true" className="h-4 w-4 transition-transform duration-300 group-hover:scale-125" />
                       Tham dự
                     </button>
