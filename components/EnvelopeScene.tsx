@@ -26,26 +26,31 @@ interface EnvelopeSceneProps {
 const envelopeWidth = 4.35;
 const envelopeHeight = 2.66;
 const envelopeDepth = 0.16;
+const sparklePositions = Array.from({ length: 12 }, (_, index) => {
+  const angle = (index / 12) * Math.PI * 2;
+  const radius = index % 2 === 0 ? 0.7 : 0.62;
+  return [Math.cos(angle) * radius, Math.sin(angle) * radius, 0.025] as const;
+});
 
 function createPaperTexture() {
   const canvas = document.createElement("canvas");
-  canvas.width = 96;
-  canvas.height = 96;
+  canvas.width = 128;
+  canvas.height = 128;
   const context = canvas.getContext("2d");
   if (!context) return null;
 
-  context.fillStyle = "#C5B3D3";
-  context.fillRect(0, 0, 96, 96);
-  for (let index = 0; index < 360; index += 1) {
-    const alpha = 0.018 + ((index * 17) % 11) / 600;
-    context.fillStyle = `rgba(92, 67, 111, ${alpha})`;
-    context.fillRect((index * 37) % 96, (index * 53) % 96, 1, 1);
+  context.fillStyle = "#B59EC8";
+  context.fillRect(0, 0, 128, 128);
+  for (let index = 0; index < 500; index += 1) {
+    const alpha = 0.015 + ((index * 17) % 11) / 500;
+    context.fillStyle = `rgba(75, 48, 93, ${alpha})`;
+    context.fillRect((index * 37) % 128, (index * 53) % 128, 1, 1);
   }
 
   const texture = new CanvasTexture(canvas);
   texture.wrapS = RepeatWrapping;
   texture.wrapT = RepeatWrapping;
-  texture.repeat.set(4, 3);
+  texture.repeat.set(3, 3);
   return texture;
 }
 
@@ -97,13 +102,13 @@ function WaxBranch({ armed }: { armed: boolean }) {
     return shape;
   }, []);
 
-  // Khi con dấu sáng lên, cành lá sẽ lấp lánh ánh kim loại vàng gold để tạo độ sang trọng
-  const color = armed ? "#EBC5A5" : "#D2BFCE";
-  const metalness = armed ? 0.88 : 0.45;
-  const roughness = armed ? 0.12 : 0.28;
+  // Khi con dấu sáng lên, cành lá có cùng màu sáp hồng trà nhưng sáng màu bắt sáng để tạo khối nổi bật chân thực
+  const color = armed ? "#E5A9A0" : "#D2BFCE";
+  const metalness = armed ? 0.38 : 0.25;
+  const roughness = armed ? 0.28 : 0.35;
 
   return (
-    <group position={[0, 0, 0.115]}>
+    <group position={[0, 0, 0.21]}>
       <mesh castShadow>
         <shapeGeometry args={[stem]} />
         <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />
@@ -123,6 +128,77 @@ function WaxBranch({ armed }: { armed: boolean }) {
         <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />
       </mesh>
     </group>
+  );
+}
+
+function SparkleRing({ armed, reducedMotion }: Pick<EnvelopeSceneProps, "armed" | "reducedMotion">) {
+  const ring = useRef<Group>(null);
+
+  useFrame(({ clock }, delta) => {
+    if (!ring.current || !armed) return;
+    const elapsed = clock.getElapsedTime();
+    ring.current.rotation.z += reducedMotion ? 0 : delta * 0.16;
+    ring.current.scale.setScalar(reducedMotion ? 1 : 1 + Math.sin(elapsed * 2.8) * 0.035);
+  });
+
+  if (!armed) return null;
+
+  return (
+    <group ref={ring}>
+      <mesh position={[0, 0, 0.005]}>
+        <torusGeometry args={[0.65, 0.008, 8, 64]} />
+        <meshBasicMaterial color="#FFE6C7" transparent opacity={0.72} />
+      </mesh>
+      {sparklePositions.map((position, index) => (
+        <mesh key={index} position={position} rotation={[0, 0, index * 0.52]} scale={index % 3 === 0 ? 1.35 : 0.82}>
+          <octahedronGeometry args={[0.035, 0]} />
+          <meshBasicMaterial color="#FFF9E8" transparent opacity={index % 2 ? 0.72 : 1} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function GlowRing({ armed }: { armed: boolean }) {
+  const meshRef = useRef<Mesh>(null);
+
+  useFrame(({ clock }) => {
+    if (!meshRef.current) return;
+    const elapsed = clock.getElapsedTime();
+    meshRef.current.scale.setScalar(1.22 + Math.sin(elapsed * 3.5) * 0.035);
+    const mat = meshRef.current.material as any;
+    if (mat) {
+      mat.opacity = 0.32 + Math.sin(elapsed * 3.5) * 0.1;
+    }
+  });
+
+  if (!armed) return null;
+
+  return (
+    <mesh position={[0, 0, -0.06]} ref={meshRef}>
+      <ringGeometry args={[0.45, 0.72, 32]} />
+      <meshBasicMaterial color="#FFE6E6" transparent opacity={0.32} side={DoubleSide} />
+    </mesh>
+  );
+}
+
+function Sparkle({ x, y, size, blinkDelay }: { x: number; y: number; size: number; blinkDelay: number }) {
+  const meshRef = useRef<Mesh>(null);
+
+  useFrame(({ clock }) => {
+    if (!meshRef.current) return;
+    const elapsed = clock.getElapsedTime();
+    const mat = meshRef.current.material as any;
+    if (mat) {
+      mat.opacity = 0.35 + Math.sin(elapsed * 4.2 + blinkDelay) * 0.35;
+    }
+  });
+
+  return (
+    <mesh position={[x, y, 0.05]} ref={meshRef}>
+      <circleGeometry args={[size, 8]} />
+      <meshBasicMaterial color="#FFF5EB" transparent opacity={0.35} side={DoubleSide} />
+    </mesh>
   );
 }
 
@@ -188,7 +264,7 @@ function EnvelopeModel({
       envelope.rotation.y = MathUtils.damp(envelope.rotation.y, pointer.x * 0.07, 5, delta);
       flapPivot.current.rotation.x = MathUtils.damp(flapPivot.current.rotation.x, 0, 7, delta);
       waxSeal.current.position.set(0, -0.22, 0.29);
-      waxSeal.current.rotation.set(Math.PI / 2, 0, 0);
+      waxSeal.current.rotation.set(0, 0, 0);
       waxSeal.current.scale.setScalar(armed && !reducedMotion ? 1 + Math.sin(elapsed * 2.8) * 0.025 : 1);
       invitationCard.current.position.set(0, -0.05, 0.08);
       invitationCard.current.rotation.set(0, 0, 0);
@@ -209,7 +285,7 @@ function EnvelopeModel({
     const easedCard = 1 - (1 - cardProgress) ** 3;
 
     waxSeal.current.position.set(0, -0.22 + easedSeal * 0.28, 0.29 + easedSeal * 0.4);
-    waxSeal.current.rotation.set(Math.PI / 2 + easedSeal * 0.16, 0, easedSeal * 0.18);
+    waxSeal.current.rotation.set(easedSeal * 0.16, 0, easedSeal * 0.18);
     waxSeal.current.scale.setScalar(Math.max(0.01, 1 - easedSeal));
     flapPivot.current.rotation.x = -Math.PI * 0.972 * easedFlap;
     invitationCard.current.position.set(0, -0.05 + easedCard * 1.62, 0.08 + easedCard * 0.46);
@@ -231,7 +307,7 @@ function EnvelopeModel({
     <group name="envelopeGroup" ref={envelopeGroup} rotation={[-0.06, 0, 0]}>
       <mesh castShadow name="envelopeBody" receiveShadow position={[0, 0, 0]}>
         <boxGeometry args={[envelopeWidth, envelopeHeight, envelopeDepth]} />
-        <meshStandardMaterial color="#C5B3D3" map={paperTexture ?? undefined} roughness={0.82} metalness={0.02} />
+        <meshStandardMaterial color="#B59EC8" map={paperTexture ?? undefined} roughness={0.78} metalness={0.03} />
       </mesh>
 
       <mesh castShadow name="invitationCard" receiveShadow ref={invitationCard} position={[0, -0.05, 0.08]}>
@@ -245,40 +321,31 @@ function EnvelopeModel({
 
       <mesh castShadow name="leftFold" position={[0, 0, envelopeDepth / 2 + 0.018]}>
         <extrudeGeometry args={[leftFold, { depth: 0.035, bevelEnabled: false }]} />
-        <meshStandardMaterial color="#B7A1C5" roughness={0.8} side={DoubleSide} />
+        <meshStandardMaterial color="#A48CB8" roughness={0.78} side={DoubleSide} />
       </mesh>
       <mesh castShadow name="rightFold" position={[0, 0, envelopeDepth / 2 + 0.019]}>
         <extrudeGeometry args={[rightFold, { depth: 0.034, bevelEnabled: false }]} />
-        <meshStandardMaterial color="#CBB9D7" roughness={0.8} side={DoubleSide} />
+        <meshStandardMaterial color="#BCA7CE" roughness={0.78} side={DoubleSide} />
       </mesh>
       <mesh castShadow name="bottomFold" position={[0, 0, envelopeDepth / 2 + 0.06]}>
         <extrudeGeometry args={[bottomFold, { depth: 0.035, bevelEnabled: false }]} />
-        <meshStandardMaterial color="#C0ADD0" roughness={0.79} side={DoubleSide} />
+        <meshStandardMaterial color="#B099C2" roughness={0.75} side={DoubleSide} />
       </mesh>
 
       <group name="flapPivot" position={[0, envelopeHeight / 2, envelopeDepth / 2 + 0.04]} ref={flapPivot}>
         <mesh castShadow name="topFlap" position={[0, 0, 0]}>
           <extrudeGeometry args={[topFlap, { depth: 0.055, bevelEnabled: false }]} />
-          <meshStandardMaterial color="#CFBDDC" map={paperTexture ?? undefined} roughness={0.78} side={DoubleSide} />
+          <meshStandardMaterial color="#BFA8D1" map={paperTexture ?? undefined} roughness={0.72} side={DoubleSide} />
         </mesh>
         <mesh position={[-1.07, -0.77, 0.062]} rotation={[0, 0, -0.62]}>
-          <boxGeometry args={[2.57, 0.021, 0.025]} />
-          <meshStandardMaterial color="#EBC5A5" metalness={0.88} roughness={0.12} />
+          <boxGeometry args={[2.57, 0.016, 0.025]} />
+          <meshStandardMaterial color="#DFB088" metalness={0.92} roughness={0.1} />
         </mesh>
         <mesh position={[1.07, -0.77, 0.062]} rotation={[0, 0, 0.62]}>
-          <boxGeometry args={[2.57, 0.021, 0.025]} />
-          <meshStandardMaterial color="#EBC5A5" metalness={0.88} roughness={0.12} />
+          <boxGeometry args={[2.57, 0.016, 0.025]} />
+          <meshStandardMaterial color="#DFB088" metalness={0.92} roughness={0.1} />
         </mesh>
       </group>
-
-      <mesh position={[-1.08, -0.5, envelopeDepth / 2 + 0.11]} rotation={[0, 0, 0.56]}>
-        <boxGeometry args={[2.5, 0.021, 0.025]} />
-        <meshStandardMaterial color="#EBC5A5" metalness={0.85} roughness={0.15} />
-      </mesh>
-      <mesh position={[1.08, -0.5, envelopeDepth / 2 + 0.11]} rotation={[0, 0, -0.56]}>
-        <boxGeometry args={[2.5, 0.021, 0.025]} />
-        <meshStandardMaterial color="#EBC5A5" metalness={0.85} roughness={0.15} />
-      </mesh>
 
       <group
         name="waxSeal"
@@ -290,26 +357,30 @@ function EnvelopeModel({
         }}
         position={[0, -0.22, 0.29]}
         ref={waxSeal}
-        rotation={[Math.PI / 2, 0, 0]}
       >
-        {/* Đèn phát sáng lung linh của con dấu khi được kích hoạt */}
         <pointLight color={armed ? "#FFE5D9" : "#F7C6C0"} distance={2.5} intensity={armed ? 4.2 : 0.15} />
-        
-        {/* Vòng hào quang phát sáng xoay nhịp nhàng (glow effect) khi con dấu đã sẵn sàng mở */}
-        {armed && (
-          <mesh position={[0, 0, -0.06]} scale={1.22 + Math.sin(elapsed * 3.5) * 0.035}>
-            <ringGeometry args={[0.45, 0.72, 32]} />
-            <meshBasicMaterial color="#FFE6E6" transparent opacity={0.38 + Math.sin(elapsed * 3.5) * 0.12} side={DoubleSide} />
-          </mesh>
-        )}
-
-        {/* Mặt dẹt chính giữa con dấu sáp */}
-        <mesh castShadow position={[0, 0, 0.02]}>
-          <cylinderGeometry args={[0.44, 0.47, 0.12, 32]} />
-          <meshStandardMaterial color={armed ? "#D88B8A" : "#B694AA"} metalness={0.38} roughness={0.28} transparent opacity={armed ? 1 : 0.65} />
+        <GlowRing armed={armed} />
+        {armed && Array.from({ length: 8 }).map((_, idx) => {
+          const angle = (idx * Math.PI * 2) / 8 + idx * 0.25;
+          const dist = 0.65 + Math.sin(idx * 2.3) * 0.14;
+          const x = Math.cos(angle) * dist;
+          const y = Math.sin(angle) * dist;
+          const size = 0.015 + Math.abs(Math.sin(idx * 1.5)) * 0.02;
+          const blinkDelay = idx * 0.45;
+          return (
+            <Sparkle
+              key={`sparkle-${idx}`}
+              x={x}
+              y={y}
+              size={size}
+              blinkDelay={blinkDelay}
+            />
+          );
+        })}
+        <mesh castShadow position={[0, 0, 0.09]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.46, 0.5, 0.17, 48]} />
+          <meshStandardMaterial color={armed ? "#D88D86" : "#B89EAD"} metalness={0.36} roughness={0.31} transparent opacity={armed ? 1 : 0.65} />
         </mesh>
-
-        {/* Viền sáp nóng chảy loang lổ tự nhiên (organic melt shape) tạo từ các hình cầu dẹt lồng ghép */}
         {Array.from({ length: 7 }).map((_, i) => {
           const angle = (i * Math.PI * 2) / 7;
           const radius = 0.4 + Math.sin(i * 1.8) * 0.035;
@@ -317,14 +388,14 @@ function EnvelopeModel({
           return (
             <mesh
               key={i}
-              position={[Math.cos(angle) * radius, Math.sin(angle) * radius, 0.01]}
-              scale={[scale * 3.1, scale * 3.1, 0.35]}
+              position={[Math.cos(angle) * radius, Math.sin(angle) * radius, 0.1]}
+              scale={[scale * 3.3, scale * 3.3, 0.18]}
             >
               <sphereGeometry args={[1, 16, 16]} />
               <meshStandardMaterial
-                color={armed ? "#D88B8A" : "#B694AA"}
-                metalness={0.35}
-                roughness={0.25}
+                color={armed ? "#D6948A" : "#B89EAD"}
+                metalness={0.22}
+                roughness={0.42}
                 transparent
                 opacity={armed ? 1 : 0.65}
               />
@@ -332,13 +403,10 @@ function EnvelopeModel({
           );
         })}
 
-        {/* Vành đai tròn dập nổi màu vàng gold sang trọng */}
-        <mesh position={[0, 0, 0.09]}>
-          <torusGeometry args={[0.34, 0.025, 10, 48]} />
-          <meshStandardMaterial color={armed ? "#E6C387" : "#C4ABB9"} metalness={armed ? 0.85 : 0.4} roughness={armed ? 0.15 : 0.3} />
+        <mesh position={[0, 0, 0.195]}>
+          <torusGeometry args={[0.35, 0.028, 12, 64]} />
+          <meshStandardMaterial color={armed ? "#F0B1A5" : "#C4ABB9"} metalness={armed ? 0.44 : 0.2} roughness={armed ? 0.24 : 0.4} />
         </mesh>
-
-        {/* Nhành olive mạ vàng gold tinh tế dập nổi ở giữa */}
         <WaxBranch armed={armed} />
       </group>
     </group>
