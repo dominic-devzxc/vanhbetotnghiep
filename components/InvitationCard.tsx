@@ -86,8 +86,14 @@ export default function InvitationCard({ name, onResponseSubmit }: InvitationCar
                 <motion.div animate={{ opacity: 1 }} initial={{ opacity: 0 }} key="choice">
                   <p className="mb-3 text-center text-sm font-semibold text-pastel-text">Bạn có thể đến chung vui không?</p>
                   <div className="grid grid-cols-2 gap-3">
-                    <button className="flex h-14 items-center justify-center gap-2 rounded-2xl bg-pastel-text px-3 text-sm font-semibold text-white transition hover:bg-[#65466F] active:scale-[0.98]" onClick={() => chooseAttendance("yes")} type="button"><Check aria-hidden="true" className="h-4 w-4" /> Tham dự</button>
-                    <button className="flex h-14 items-center justify-center gap-2 rounded-2xl border border-pastel-text/30 bg-white/70 px-3 text-sm font-semibold text-pastel-text transition hover:bg-pastel-peach active:scale-[0.98]" onClick={() => chooseAttendance("no")} type="button"><X aria-hidden="true" className="h-4 w-4" /> Không tham dự</button>
+                    <button className="group flex h-14 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#9C3D6D] to-[#7C5B8B] px-3 text-sm font-semibold text-white shadow-soft transition-all duration-300 ease-out hover:from-[#B44B80] hover:to-[#8E699E] hover:shadow-[0_8px_25px_-5px_rgba(156,61,109,0.35)] hover:scale-[1.03] active:scale-[0.97]" onClick={() => chooseAttendance("yes")} type="button">
+                      <Check aria-hidden="true" className="h-4 w-4 transition-transform duration-300 group-hover:scale-125" />
+                      Tham dự
+                    </button>
+                    <button className="group flex h-14 items-center justify-center gap-2 rounded-2xl border border-[#7C5B8B]/25 bg-white/60 px-3 text-sm font-semibold text-pastel-text shadow-soft transition-all duration-300 ease-out hover:bg-gradient-to-r hover:from-[#FBEFEF] hover:to-[#FFE2E2] hover:text-[#9C3D6D] hover:border-[#9C3D6D]/45 hover:shadow-[0_8px_25px_-5px_rgba(124,91,139,0.15)] hover:scale-[1.03] active:scale-[0.97]" onClick={() => chooseAttendance("no")} type="button">
+                      <X aria-hidden="true" className="h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />
+                      Không tham dự
+                    </button>
                   </div>
                 </motion.div>
               ) : stage === "success" && copy ? (
