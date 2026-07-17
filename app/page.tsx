@@ -53,6 +53,7 @@ function InvitationMain() {
   const [name, setName] = useState('');
   const [minimumLoadingDone, setMinimumLoadingDone] = useState(false);
   const [sceneReady, setSceneReady] = useState(false);
+  const [sceneOpeningComplete, setSceneOpeningComplete] = useState(false);
   const [clickRipples, setClickRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
   const clickSequence = useRef(0);
   const reduceMotion = useReducedMotion();
@@ -76,7 +77,7 @@ function InvitationMain() {
   }, []);
 
   useEffect(() => {
-    if (stage !== 'opening') return;
+    if (stage !== 'opening' || !reduceMotion) return;
 
     const timer = window.setTimeout(
       () => setStage('invitation'),
@@ -89,8 +90,19 @@ function InvitationMain() {
 
   const handleOpenInvitation = (enteredName: string) => {
     setName(enteredName);
+    setSceneOpeningComplete(false);
     setStage('opening');
   };
+
+  const handleSceneOpeningComplete = useCallback(() => {
+    setSceneOpeningComplete(true);
+  }, []);
+
+  useEffect(() => {
+    if (!sceneOpeningComplete || stage !== 'opening') return;
+    const timer = window.setTimeout(() => setStage('invitation'), 220);
+    return () => window.clearTimeout(timer);
+  }, [sceneOpeningComplete, stage]);
 
   const handlePointerDown = (event: React.PointerEvent<HTMLElement>) => {
     if (reduceMotion) return;
@@ -227,6 +239,7 @@ function InvitationMain() {
               <InvitationCover
                 initialName={name}
                 onOpen={handleOpenInvitation}
+                onOpeningComplete={handleSceneOpeningComplete}
                 onSceneReady={markSceneReady}
                 opening={stage === 'opening'}
               />
