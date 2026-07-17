@@ -80,3 +80,7 @@ created: 2026-07-17
 
 - [X] T030 [US2] Hiển thị tên khách trên dòng trống trong ảnh thiệp và bỏ lớp chữ “Trân trọng kính mời” trùng lặp tại `components/InvitationCard.tsx`.
 - [X] T031 [US3] Tái hiện local RSVP 502 và bổ sung bằng chứng Apps Script yêu cầu đăng nhập tại `.agent/debug/rsvp-502-apps-script-auth.md`.
+
+## Phase 15: Apps Script sheet binding
+
+- [X] T032 [US3] Mở Sheet qua `SPREADSHEET_ID` Script Property thay vì active spreadsheet trong `google-apps-script/Code.gs`; xác nhận build Docker.

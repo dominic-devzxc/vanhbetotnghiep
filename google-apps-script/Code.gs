@@ -1,5 +1,17 @@
 const RSVP_SHEET_NAME = "Trang tính1";
 const RSVP_HEADERS = ["STT", "Họ tên người tham dự", "Trạng thái", "Thời gian gửi", "Lời nhắn"];
+const SPREADSHEET_ID_PROPERTY = "SPREADSHEET_ID";
+
+function getRsvpSheet() {
+  const spreadsheetId = PropertiesService.getScriptProperties().getProperty(SPREADSHEET_ID_PROPERTY);
+
+  if (!spreadsheetId) {
+    throw new Error("Missing Script Property: " + SPREADSHEET_ID_PROPERTY);
+  }
+
+  const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
+  return spreadsheet.getSheetByName(RSVP_SHEET_NAME) || spreadsheet.getActiveSheet();
+}
 
 function doPost(event) {
   const lock = LockService.getScriptLock();
@@ -16,8 +28,7 @@ function doPost(event) {
       return jsonResponse({ ok: false, message: "Invalid RSVP payload" });
     }
 
-    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-    const sheet = spreadsheet.getSheetByName(RSVP_SHEET_NAME) || spreadsheet.getActiveSheet();
+    const sheet = getRsvpSheet();
 
     if (sheet.getLastRow() === 0) {
       sheet.appendRow(RSVP_HEADERS);

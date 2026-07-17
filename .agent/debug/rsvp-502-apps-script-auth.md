@@ -25,6 +25,13 @@
 
 Deployment Apps Script đang yêu cầu đăng nhập Google, nên server Next.js không thể gọi ẩn danh. `response.json()` nhận HTML và ném lỗi; catch của route ánh xạ lỗi này thành HTTP 502.
 
+## Xác minh sau khi đổi quyền deployment
+
+- URL `/exec` version 2 hiện trả JSON từ `doGet()`, nên quyền public đã đúng.
+- POST hợp lệ đi vào Apps Script nhưng trả JSON `{ "ok": false, "message": "Không thể lưu phản hồi" }`.
+- Cần cấu hình rõ spreadsheet cho Web App độc lập: `getActiveSpreadsheet()` không đáng tin cậy khi script không được tạo từ **Tiện ích mở rộng → Apps Script** của chính Sheet.
+- Bản script trong repository dùng `SPREADSHEET_ID` trong Script Properties và `SpreadsheetApp.openById()` để mở chính xác Sheet.
+
 ## Khắc phục bên Google Apps Script
 
 1. Dán/cập nhật `google-apps-script/Code.gs` trong Apps Script gắn với Sheet.
