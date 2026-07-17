@@ -20,3 +20,5 @@
 ## Final Phase: Polish
 
 - [X] T006 [P] Chạy type-check/build bằng Docker, rà soát diff và cập nhật trạng thái task trong `.agent/specs/three-d-envelope/tasks.md`.
+- [X] T007 [P] [US1] Loại bỏ pulse/glow gây nhấp nháy và tách lớp sâu của thiệp khỏi nếp gấp trong `components/EnvelopeScene.tsx`.
+- [X] T008 [P] Chạy repro chiều sâu, type-check, Docker build và kiểm tra render trong `components/EnvelopeScene.tsx`.

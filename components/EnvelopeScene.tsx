@@ -26,11 +26,8 @@ interface EnvelopeSceneProps {
 const envelopeWidth = 4.35;
 const envelopeHeight = 2.66;
 const envelopeDepth = 0.16;
-const sparklePositions = Array.from({ length: 12 }, (_, index) => {
-  const angle = (index / 12) * Math.PI * 2;
-  const radius = index % 2 === 0 ? 0.55 : 0.48;
-  return [Math.cos(angle) * radius, Math.sin(angle) * radius, 0.025] as const;
-});
+const invitationClosedZ = -0.01;
+const invitationOpenZ = 0.29;
 
 function createPaperTexture() {
   const canvas = document.createElement("canvas");
@@ -157,77 +154,6 @@ function WaxBranch({ armed }: { armed: boolean }) {
   );
 }
 
-function SparkleRing({ armed, reducedMotion }: Pick<EnvelopeSceneProps, "armed" | "reducedMotion">) {
-  const ring = useRef<Group>(null);
-
-  useFrame(({ clock }, delta) => {
-    if (!ring.current || !armed) return;
-    const elapsed = clock.getElapsedTime();
-    ring.current.rotation.z += reducedMotion ? 0 : delta * 0.16;
-    ring.current.scale.setScalar(reducedMotion ? 1 : 1 + Math.sin(elapsed * 2.8) * 0.035);
-  });
-
-  if (!armed) return null;
-
-  return (
-    <group ref={ring}>
-      <mesh position={[0, 0, 0.005]}>
-        <torusGeometry args={[0.51, 0.007, 8, 64]} />
-        <meshBasicMaterial color="#FFE6C7" transparent opacity={0.72} />
-      </mesh>
-      {sparklePositions.map((position, index) => (
-        <mesh key={index} position={position} rotation={[0, 0, index * 0.52]} scale={index % 3 === 0 ? 1.35 : 0.82}>
-          <octahedronGeometry args={[0.035, 0]} />
-          <meshBasicMaterial color="#FFF9E8" transparent opacity={index % 2 ? 0.72 : 1} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
-function GlowRing({ armed }: { armed: boolean }) {
-  const meshRef = useRef<Mesh>(null);
-
-  useFrame(({ clock }) => {
-    if (!meshRef.current) return;
-    const elapsed = clock.getElapsedTime();
-    meshRef.current.scale.setScalar(1.22 + Math.sin(elapsed * 3.5) * 0.035);
-    const mat = meshRef.current.material as any;
-    if (mat) {
-      mat.opacity = 0.32 + Math.sin(elapsed * 3.5) * 0.1;
-    }
-  });
-
-  if (!armed) return null;
-
-  return (
-    <mesh position={[0, 0, -0.06]} ref={meshRef}>
-      <ringGeometry args={[0.34, 0.55, 32]} />
-      <meshBasicMaterial color="#FFE6E6" transparent opacity={0.32} side={DoubleSide} />
-    </mesh>
-  );
-}
-
-function Sparkle({ x, y, size, blinkDelay }: { x: number; y: number; size: number; blinkDelay: number }) {
-  const meshRef = useRef<Mesh>(null);
-
-  useFrame(({ clock }) => {
-    if (!meshRef.current) return;
-    const elapsed = clock.getElapsedTime();
-    const mat = meshRef.current.material as any;
-    if (mat) {
-      mat.opacity = 0.35 + Math.sin(elapsed * 4.2 + blinkDelay) * 0.35;
-    }
-  });
-
-  return (
-    <mesh position={[x, y, 0.05]} ref={meshRef}>
-      <circleGeometry args={[size, 8]} />
-      <meshBasicMaterial color="#FFF5EB" transparent opacity={0.35} side={DoubleSide} />
-    </mesh>
-  );
-}
-
 function EnvelopeModel({
   armed,
   guestName,
@@ -292,8 +218,8 @@ function EnvelopeModel({
       flapPivot.current.rotation.x = MathUtils.damp(flapPivot.current.rotation.x, 0, 7, delta);
       waxSeal.current.position.set(0, -0.22, 0.29);
       waxSeal.current.rotation.set(0, 0, 0);
-      waxSeal.current.scale.setScalar(armed && !reducedMotion ? 1 + Math.sin(elapsed * 2.8) * 0.025 : 1);
-      invitationCard.current.position.set(0, -0.05, 0.08);
+      waxSeal.current.scale.setScalar(1);
+      invitationCard.current.position.set(0, -0.05, invitationClosedZ);
       invitationCard.current.rotation.set(0, 0, 0);
       camera.position.z = MathUtils.damp(camera.position.z, 5.3, 4, delta);
       camera.position.y = MathUtils.damp(camera.position.y, 0.52, 4, delta);
@@ -315,7 +241,11 @@ function EnvelopeModel({
     waxSeal.current.rotation.set(easedSeal * 0.16, 0, easedSeal * 0.18);
     waxSeal.current.scale.setScalar(Math.max(0.01, 1 - easedSeal));
     flapPivot.current.rotation.x = -Math.PI * 0.972 * easedFlap;
-    invitationCard.current.position.set(0, -0.05 + easedCard * 1.62, 0.08 + easedCard * 0.46);
+    invitationCard.current.position.set(
+      0,
+      -0.05 + easedCard * 1.62,
+      MathUtils.lerp(invitationClosedZ, invitationOpenZ, easedCard),
+    );
     invitationCard.current.rotation.x = -0.25 * (1 - easedCard);
     envelope.position.y = MathUtils.damp(envelope.position.y, 0, 6, delta);
     envelope.rotation.x = MathUtils.damp(envelope.rotation.x, -0.15, 6, delta);
@@ -337,7 +267,7 @@ function EnvelopeModel({
         <meshStandardMaterial color="#DAB9B7" map={paperTexture ?? undefined} roughness={0.86} metalness={0.01} />
       </mesh>
 
-      <mesh castShadow name="invitationCard" receiveShadow ref={invitationCard} position={[0, -0.05, 0.08]}>
+      <mesh castShadow name="invitationCard" receiveShadow ref={invitationCard} position={[0, -0.05, invitationClosedZ]}>
         <boxGeometry args={[3.65, 2.18, 0.075]} />
         <meshStandardMaterial color="#FFF6EC" roughness={0.88} />
         <mesh position={[0, 0, 0.045]}>
@@ -385,30 +315,11 @@ function EnvelopeModel({
         position={[0, -0.22, 0.29]}
         ref={waxSeal}
       >
-        <pointLight color={armed ? "#FFE5D9" : "#F7C6C0"} distance={2.5} intensity={armed ? 4.2 : 0.15} />
-        <GlowRing armed={armed} />
-        {armed && Array.from({ length: 8 }).map((_, idx) => {
-          const angle = (idx * Math.PI * 2) / 8 + idx * 0.25;
-          const dist = 0.65 + Math.sin(idx * 2.3) * 0.14;
-          const x = Math.cos(angle) * dist;
-          const y = Math.sin(angle) * dist;
-          const size = 0.015 + Math.abs(Math.sin(idx * 1.5)) * 0.02;
-          const blinkDelay = idx * 0.45;
-          return (
-            <Sparkle
-              key={`sparkle-${idx}`}
-              x={x}
-              y={y}
-              size={size}
-              blinkDelay={blinkDelay}
-            />
-          );
-        })}
         <mesh castShadow position={[0, 0, 0.07]}>
           <extrudeGeometry
             args={[waxSealShape, { bevelEnabled: true, bevelSegments: 3, bevelSize: 0.022, bevelThickness: 0.018, curveSegments: 64, depth: 0.12 }]}
           />
-          <meshStandardMaterial color={armed ? "#A64A62" : "#B39EA8"} metalness={0.14} roughness={0.44} transparent opacity={armed ? 1 : 0.72} />
+          <meshStandardMaterial color={armed ? "#A64A62" : "#A98F9A"} metalness={0.14} roughness={0.44} />
         </mesh>
 
         <mesh position={[0, 0, 0.218]}>
