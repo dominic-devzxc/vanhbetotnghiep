@@ -84,3 +84,7 @@ created: 2026-07-17
 ## Phase 15: Apps Script sheet binding
 
 - [X] T032 [US3] Mở Sheet qua `SPREADSHEET_ID` Script Property thay vì active spreadsheet trong `google-apps-script/Code.gs`; xác nhận build Docker.
+
+## Phase 16: Flower motion scale
+
+- [X] T033 [US1] Tăng kích thước cánh hoa rơi, giữ nguyên mật độ hiệu ứng tại `app/page.tsx`; xác nhận bằng Docker build.

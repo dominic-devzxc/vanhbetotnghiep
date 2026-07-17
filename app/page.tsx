@@ -17,7 +17,7 @@ function RosePetals({ count = 9 }: { count?: number }) {
       left: `${Math.random() * 100}%`,
       delay: `${Math.random() * 8}s`,
       duration: `${10 + Math.random() * 15}s`,
-      size: `${7 + Math.random() * 6}px`,
+      size: `${12 + Math.random() * 10}px`,
       glyph: index % 3 === 0 ? '🌸' : '❀',
     }));
     setPetals(generatedPetals);
