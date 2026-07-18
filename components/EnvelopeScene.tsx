@@ -267,10 +267,10 @@ function EnvelopeModel({
       envelope.rotation.x = MathUtils.damp(envelope.rotation.x, -0.15 + pointer.y * 0.07, 5, delta);
       envelope.rotation.y = MathUtils.damp(envelope.rotation.y, pointer.x * 0.07, 5, delta);
       flapPivot.current.rotation.x = MathUtils.damp(flapPivot.current.rotation.x, 0, 7, delta);
-      waxSeal.current.position.set(0, -0.12, 0.29);
+      waxSeal.current.position.set(0, -0.02, 0.29);
       waxSeal.current.rotation.set(0, 0, 0);
       waxSeal.current.scale.setScalar(waxSealScale);
-      camera.position.z = MathUtils.damp(camera.position.z, 6.2, 4, delta);
+      camera.position.z = MathUtils.damp(camera.position.z, 7.0, 4, delta);
       camera.position.y = MathUtils.damp(camera.position.y, 0.52, 4, delta);
       camera.lookAt(0, 0, 0);
       return;
@@ -284,14 +284,14 @@ function EnvelopeModel({
     const easedSeal = 1 - (1 - sealProgress) ** 3;
     const easedFlap = flapProgress * flapProgress * (3 - 2 * flapProgress);
 
-    waxSeal.current.position.set(0, -0.12 + easedSeal * 0.28, 0.29 + easedSeal * 0.4);
+    waxSeal.current.position.set(0, -0.02 + easedSeal * 0.28, 0.29 + easedSeal * 0.4);
     waxSeal.current.rotation.set(easedSeal * 0.16, 0, easedSeal * 0.18);
     waxSeal.current.scale.setScalar(Math.max(0.01, waxSealScale * (1 - easedSeal)));
     flapPivot.current.rotation.x = -Math.PI * 0.972 * easedFlap;
     envelope.position.y = MathUtils.damp(envelope.position.y, 0, 6, delta);
     envelope.rotation.x = MathUtils.damp(envelope.rotation.x, -0.15, 6, delta);
     envelope.rotation.y = MathUtils.damp(envelope.rotation.y, 0, 6, delta);
-    camera.position.z = MathUtils.damp(camera.position.z, 5.45, 3.5, delta);
+    camera.position.z = MathUtils.damp(camera.position.z, 6.15, 3.5, delta);
     camera.position.y = MathUtils.damp(camera.position.y, 0.42, 3.5, delta);
     camera.lookAt(0, 0.1, 0);
 
@@ -356,7 +356,7 @@ function EnvelopeModel({
           event.stopPropagation();
           setSealCursor(true);
         }}
-        position={[0, -0.12, 0.29]}
+        position={[0, -0.02, 0.29]}
         ref={waxSeal}
       >
         <mesh castShadow position={[0, 0, 0.07]}>
@@ -391,7 +391,7 @@ function SceneContents(props: EnvelopeSceneProps) {
 export default function EnvelopeScene(props: EnvelopeSceneProps) {
   return (
     <Canvas
-      camera={{ fov: 34, position: [0, 0.52, 6.2] }}
+      camera={{ fov: 34, position: [0, 0.52, 7.0] }}
       dpr={[1, 2]}
       gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
       shadows
