@@ -255,9 +255,9 @@ function InvitationMain() {
                 className="relative mx-auto flex h-28 w-28 items-center justify-center"
                 transition={{ duration: 2.8, ease: 'easeInOut', repeat: Infinity }}
               >
-                <span className="text-7xl drop-shadow-sm" aria-hidden="true">🌸</span>
-                <motion.span animate={{ rotate: 360, x: [0, 8, 0] }} className="absolute -right-2 top-1 text-2xl" transition={{ duration: 3.2, ease: 'linear', repeat: Infinity }} aria-hidden="true">❀</motion.span>
-                <motion.span animate={{ rotate: -360, x: [0, -6, 0] }} className="absolute -left-1 bottom-2 text-xl text-pastel-rose" transition={{ duration: 3.8, ease: 'linear', repeat: Infinity }} aria-hidden="true">✿</motion.span>
+                <span className="text-7xl drop-shadow-sm filter" style={{ filter: 'hue-rotate(75deg)' }} aria-hidden="true">🌸</span>
+                <motion.span animate={{ rotate: 360, x: [0, 8, 0] }} className="absolute -right-2 top-1 text-2xl text-[#C9ADD1]" transition={{ duration: 3.2, ease: 'linear', repeat: Infinity }} aria-hidden="true">❀</motion.span>
+                <motion.span animate={{ rotate: -360, x: [0, -6, 0] }} className="absolute -left-1 bottom-2 text-xl text-[#B89CC2]" transition={{ duration: 3.8, ease: 'linear', repeat: Infinity }} aria-hidden="true">✿</motion.span>
               </motion.div>
               <p className="mt-5 font-serif text-2xl font-semibold text-pastel-text">Hoa đang nở, thư sắp mở…</p>
               <p className="mt-2 text-sm leading-6 text-pastel-text/65">Vân Anh đang chuẩn bị lời mời dành riêng cho bạn.</p>
