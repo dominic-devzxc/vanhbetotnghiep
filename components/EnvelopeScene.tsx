@@ -248,7 +248,7 @@ function EnvelopeModel({
       envelope.rotation.x = MathUtils.damp(envelope.rotation.x, -0.15 + pointer.y * 0.07, 5, delta);
       envelope.rotation.y = MathUtils.damp(envelope.rotation.y, pointer.x * 0.07, 5, delta);
       flapPivot.current.rotation.x = MathUtils.damp(flapPivot.current.rotation.x, 0, 7, delta);
-      waxSeal.current.position.set(0, -0.22, 0.29);
+      waxSeal.current.position.set(0, -0.12, 0.29);
       waxSeal.current.rotation.set(0, 0, 0);
       waxSeal.current.scale.setScalar(waxSealScale);
       camera.position.z = MathUtils.damp(camera.position.z, 5.3, 4, delta);
@@ -265,7 +265,7 @@ function EnvelopeModel({
     const easedSeal = 1 - (1 - sealProgress) ** 3;
     const easedFlap = flapProgress * flapProgress * (3 - 2 * flapProgress);
 
-    waxSeal.current.position.set(0, -0.22 + easedSeal * 0.28, 0.29 + easedSeal * 0.4);
+    waxSeal.current.position.set(0, -0.12 + easedSeal * 0.28, 0.29 + easedSeal * 0.4);
     waxSeal.current.rotation.set(easedSeal * 0.16, 0, easedSeal * 0.18);
     waxSeal.current.scale.setScalar(Math.max(0.01, waxSealScale * (1 - easedSeal)));
     flapPivot.current.rotation.x = -Math.PI * 0.972 * easedFlap;
@@ -337,7 +337,7 @@ function EnvelopeModel({
           event.stopPropagation();
           setSealCursor(true);
         }}
-        position={[0, -0.22, 0.29]}
+        position={[0, -0.12, 0.29]}
         ref={waxSeal}
       >
         <mesh castShadow position={[0, 0, 0.07]}>
