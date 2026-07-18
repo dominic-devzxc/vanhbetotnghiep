@@ -214,6 +214,9 @@ function InvitationMain() {
 
       {/* Nút điều khiển nhạc nền quay tròn dễ thương */}
       <button
+        onPointerDown={(e) => {
+          e.stopPropagation(); // Ngăn pointerdown nổi bọt lên main làm nhiễu loạn trạng thái nhạc
+        }}
         onClick={(e) => {
           e.stopPropagation(); // Ngăn kích hoạt click ripple
           toggleMusic();
