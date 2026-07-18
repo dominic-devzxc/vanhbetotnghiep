@@ -32,7 +32,7 @@ const ornamentDots = Array.from({ length: 12 }, (_, index) => {
 });
 const haloSparkles = Array.from({ length: 10 }, (_, index) => {
   const angle = (index / 10) * Math.PI * 2;
-  return [Math.cos(angle) * 0.455, Math.sin(angle) * 0.455] as const;
+  return [Math.cos(angle) * 0.655, Math.sin(angle) * 0.655] as const;
 });
 
 function createPaperTexture() {
@@ -107,22 +107,41 @@ function createTasselShape() {
 }
 
 function SealHalo({ armed }: { armed: boolean }) {
+  const groupRef = useRef<Group>(null);
+
+  useFrame(({ clock }) => {
+    if (!groupRef.current || !armed) return;
+    const elapsed = clock.getElapsedTime();
+    // Quay vòng sáng quanh con dấu theo chiều kim đồng hồ
+    groupRef.current.rotation.z = elapsed * 0.26;
+    // Co giãn pulsing nhẹ nhàng
+    groupRef.current.scale.setScalar(1.08 + Math.sin(elapsed * 2.8) * 0.032);
+  });
+
   if (!armed) return null;
 
   return (
-    <group position={[0, 0, 0.055]}>
-      <pointLight color="#FFE2B8" distance={1.6} intensity={0.8} position={[0, 0, 0.18]} />
+    <group position={[0, 0, 0.055]} ref={groupRef}>
+      <pointLight color="#FFE2B8" distance={2.2} intensity={1.2} position={[0, 0, 0.18]} />
+      {/* Vòng hào quang sáng trong (To hơn) */}
       <mesh>
-        <ringGeometry args={[0.405, 0.43, 64]} />
-        <meshBasicMaterial color="#FFE2B8" opacity={0.5} side={DoubleSide} transparent />
+        <ringGeometry args={[0.58, 0.62, 64]} />
+        <meshBasicMaterial color="#FFE2B8" opacity={0.48} side={DoubleSide} transparent />
       </mesh>
+      {/* Vòng hào quang sáng ngoài (To hơn) */}
       <mesh position={[0, 0, -0.002]}>
-        <ringGeometry args={[0.475, 0.481, 64]} />
+        <ringGeometry args={[0.66, 0.67, 64]} />
         <meshBasicMaterial color="#FFF1D4" opacity={0.32} side={DoubleSide} transparent />
       </mesh>
+      {/* Vòng tỏa mờ siêu to ngoài cùng */}
+      <mesh position={[0, 0, -0.004]}>
+        <ringGeometry args={[0.67, 0.85, 64]} />
+        <meshBasicMaterial color="#FFE6E6" opacity={0.16} side={DoubleSide} transparent />
+      </mesh>
+      {/* Các hạt sáng lấp lánh (Sparkles) bay nhảy quay theo */}
       {haloSparkles.map(([x, y], index) => (
         <mesh key={`halo-${index}`} position={[x, y, 0.012]} rotation={[0, 0, index * 0.63]} scale={index % 2 === 0 ? 1 : 0.7}>
-          <octahedronGeometry args={[0.022, 0]} />
+          <octahedronGeometry args={[0.024, 0]} />
           <meshBasicMaterial color="#FFF0CE" />
         </mesh>
       ))}
