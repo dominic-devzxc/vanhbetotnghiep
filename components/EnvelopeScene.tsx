@@ -270,7 +270,7 @@ function EnvelopeModel({
       waxSeal.current.position.set(0, -0.12, 0.29);
       waxSeal.current.rotation.set(0, 0, 0);
       waxSeal.current.scale.setScalar(waxSealScale);
-      camera.position.z = MathUtils.damp(camera.position.z, 5.3, 4, delta);
+      camera.position.z = MathUtils.damp(camera.position.z, 6.2, 4, delta);
       camera.position.y = MathUtils.damp(camera.position.y, 0.52, 4, delta);
       camera.lookAt(0, 0, 0);
       return;
@@ -291,7 +291,7 @@ function EnvelopeModel({
     envelope.position.y = MathUtils.damp(envelope.position.y, 0, 6, delta);
     envelope.rotation.x = MathUtils.damp(envelope.rotation.x, -0.15, 6, delta);
     envelope.rotation.y = MathUtils.damp(envelope.rotation.y, 0, 6, delta);
-    camera.position.z = MathUtils.damp(camera.position.z, 4.65, 3.5, delta);
+    camera.position.z = MathUtils.damp(camera.position.z, 5.45, 3.5, delta);
     camera.position.y = MathUtils.damp(camera.position.y, 0.42, 3.5, delta);
     camera.lookAt(0, 0.1, 0);
 
@@ -391,7 +391,7 @@ function SceneContents(props: EnvelopeSceneProps) {
 export default function EnvelopeScene(props: EnvelopeSceneProps) {
   return (
     <Canvas
-      camera={{ fov: 34, position: [0, 0.52, 5.3] }}
+      camera={{ fov: 34, position: [0, 0.52, 6.2] }}
       dpr={[1, 2]}
       gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
       shadows
