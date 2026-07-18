@@ -122,11 +122,24 @@ export default function InvitationCover({
         <label className="mb-2 block pl-3 text-base font-bold text-pastel-text sm:text-lg" htmlFor="guest-name">Tên gọi thân mật của bạn</label>
         <motion.div
           animate={shakeInput ? { x: [0, -8, 7, -5, 2, 0] } : { x: 0 }}
-          className="rounded-full border-2 border-[#F0B8D1] bg-white/55 p-1.5 shadow-[0_10px_34px_rgba(210,140,174,0.2),inset_0_0_0_2px_rgba(255,255,255,0.9)] backdrop-blur-md focus-within:ring-4 focus-within:ring-[#E9BBD6]/40"
+          className={`relative rounded-full border-2 p-1.5 shadow-[0_10px_34px_rgba(210,140,174,0.2),inset_0_0_0_2px_rgba(255,255,255,0.9)] backdrop-blur-md transition-all duration-500 focus-within:ring-8 focus-within:ring-[#E9BBD6]/30 ${armed ? "border-[#E59ABF] bg-gradient-to-r from-[#FFF5F8] to-[#FFF0F5] shadow-[0_12px_40px_rgba(229,154,191,0.32)]" : "border-[#F0B8D1] bg-white/55"}`}
           transition={{ duration: 0.42 }}
         >
+          {/* Hiệu ứng hạt lấp lánh phép thuật ở góc khi gõ tên */}
+          {armed && (
+            <div className="absolute -right-2 -top-2 pointer-events-none flex gap-1 z-20">
+              <motion.span animate={{ scale: [0.8, 1.3, 0.8], rotate: [0, 90, 0], opacity: [0.5, 1, 0.5] }} transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }} className="text-xl leading-none">✨</motion.span>
+              <motion.span animate={{ scale: [1.2, 0.7, 1.2], opacity: [1, 0.3, 1] }} transition={{ duration: 1.8, repeat: Infinity, delay: 0.3, ease: "easeInOut" }} className="text-xs leading-none">⭐</motion.span>
+            </div>
+          )}
+          {armed && (
+            <div className="absolute -left-2 -bottom-2 pointer-events-none flex gap-1 z-20">
+              <motion.span animate={{ scale: [1, 1.25, 1], y: [0, -4, 0], opacity: [0.6, 1, 0.6] }} transition={{ duration: 1.6, repeat: Infinity, delay: 0.5, ease: "easeInOut" }} className="text-base leading-none">🌸</motion.span>
+            </div>
+          )}
+
           <div className="flex h-16 items-center rounded-full bg-white/80 px-5">
-            <Flower2 aria-hidden="true" className="mr-3 h-6 w-6 shrink-0 text-[#E59ABF]" strokeWidth={1.8} />
+            <Flower2 aria-hidden="true" className={`mr-3 h-6 w-6 shrink-0 text-[#E59ABF] transition-all duration-500 ${armed ? "animate-[spin_4s_linear_infinite] scale-110 text-[#9C3D6D]" : ""}`} strokeWidth={1.8} />
             <input
               aria-describedby="guest-notice"
               autoComplete="name"
