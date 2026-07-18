@@ -8,7 +8,7 @@ import InvitationCover from '@/components/InvitationCover';
 import InvitationCard from '@/components/InvitationCard';
 
 // Tạo hiệu ứng hoa anh đào rơi nhẹ
-function RosePetals({ count = 9 }: { count?: number }) {
+function RosePetals({ count = 42 }: { count?: number }) {
   const [petals, setPetals] = useState<Array<{ id: number; left: string; delay: string; duration: string; size: string; glyph: string }>>([]);
 
   useEffect(() => {
@@ -16,8 +16,8 @@ function RosePetals({ count = 9 }: { count?: number }) {
     const generatedPetals = Array.from({ length: count }).map((_, index) => ({
       id: index,
       left: `${Math.random() * 100}%`,
-      delay: `${Math.random() * 8}s`,
-      duration: `${10 + Math.random() * 15}s`,
+      delay: `${Math.random() * 2.8}s`,
+      duration: `${6.0 + Math.random() * 7.5}s`,
       size: `${12 + Math.random() * 10}px`,
       glyph: index % 3 === 0 ? '🌸' : '❀',
     }));
@@ -29,7 +29,7 @@ function RosePetals({ count = 9 }: { count?: number }) {
       {petals.map((petal) => (
         <span
           key={petal.id}
-          className="pointer-events-none absolute block text-pastel-rose/35 opacity-45 will-change-transform"
+          className="pointer-events-none absolute block text-pastel-rose/70 opacity-75 will-change-transform"
           style={{
             left: petal.left,
             animationDelay: petal.delay,
@@ -197,6 +197,8 @@ function InvitationMain() {
 
   return (
     <main className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-[#FFF6F8] px-4 py-8 md:px-8 md:py-12" onPointerDown={handlePointerDown}>
+      {/* Hiệu ứng cánh hoa rơi lung linh ở nền */}
+      <RosePetals count={48} />
       {stage !== 'invitation' ? (
         <Image
           alt=""
@@ -248,7 +250,7 @@ function InvitationMain() {
             initial={{ opacity: 1 }}
             transition={{ duration: 0.55, ease: 'easeOut' }}
           >
-            <RosePetals count={12} />
+            <RosePetals count={20} />
             <div className="relative z-10 w-full max-w-xs text-center">
               <motion.div
                 animate={{ rotate: [0, 8, -6, 0], scale: [0.92, 1.08, 0.98, 0.92], y: [0, -7, 0] }}
